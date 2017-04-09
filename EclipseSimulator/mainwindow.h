@@ -2,13 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ui_EclipseSimulator.h"
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public Ui::mainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 };
 
