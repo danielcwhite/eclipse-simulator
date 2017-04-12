@@ -23,22 +23,32 @@ struct Ship
   int initiative;
 };
 
-using GunRoll = std::vector<int>;
+template <typename T>
+using Roll = std::vector<T>;
 
-std::ostream& operator<<(std::ostream& o, const GunRoll& g)
+using OneGunRoll = Roll<int>;
+using HitResult = Roll<bool>;
+
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const Roll<T>& g)
 {
-  std::copy(g.cbegin(), g.cend(), std::ostream_iterator<int>(o, ", "));
+  std::copy(g.cbegin(), g.cend(), std::ostream_iterator<T>(o, ","));
   return o;
 }
 
-struct AttackRoll
+template <typename T>
+struct GunRoll
 {
-  GunRoll yellowDice;
-  GunRoll orangeDice;
-  GunRoll redDice;
+  Roll<T> yellowDice;
+  Roll<T> orangeDice;
+  Roll<T> redDice;
 };
 
-std::ostream& operator<<(std::ostream& o, const AttackRoll& g)
+using AttackRoll = GunRoll<int>;
+using ResultRoll = GunRoll<bool>;
+
+template <typename T>
+std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
 {
   if (!g.yellowDice.empty())
     o << "Yellow: " << g.yellowDice << "\n";
@@ -49,11 +59,11 @@ std::ostream& operator<<(std::ostream& o, const AttackRoll& g)
   return o;
 }
 
-GunRoll rollGuns(const Ship& ship, int Ship::*gun)
+OneGunRoll rollGuns(const Ship& ship, int Ship::*gun)
 {
-  GunRoll gunRoll;
+  OneGunRoll gunRoll;
   for (int i = 0; i < ship.*gun; ++i)
-    gunRoll.push_back(roll() + ship.computer);
+    gunRoll.push_back(roll());
   return gunRoll;
 }
 
@@ -95,10 +105,10 @@ const Ship& ship(const ShipWithHitPoints& shp)
   return std::get<0>(shp);
 }
 
-std::ostream& operator<<(std::ostream& o, const ShipWithHitPoints& ship)
+std::ostream& operator<<(std::ostream& o, const ShipWithHitPoints& s)
 {
-  const auto& shipDesc = std::get<0>(ship);
-  return o << shipDesc << " : " << std::get<1>(ship) << "/" << (shipDesc.hull+1) << " hp";
+  const auto& shipDesc = ship(s);
+  return o << shipDesc << " : " << std::get<1>(s) << "/" << (shipDesc.hull+1) << " hp";
 }
 
 class Fleet
