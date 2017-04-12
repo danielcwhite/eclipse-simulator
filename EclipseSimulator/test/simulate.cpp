@@ -3,6 +3,7 @@
 #include <tuple>
 #include <random>
 #include <iterator>
+#include <functional>
 
 int roll()
 {
@@ -45,7 +46,7 @@ struct GunRoll
 };
 
 using AttackRoll = GunRoll<int>;
-using ResultRoll = GunRoll<bool>;
+using ResultOfRoll = GunRoll<bool>;
 
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
@@ -73,6 +74,34 @@ AttackRoll attack(const Ship& ship)
     rollGuns(ship, &Ship::yellowGuns),
     rollGuns(ship, &Ship::orangeGuns),
     rollGuns(ship, &Ship::redGuns)
+  };
+}
+
+std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield)
+{
+  return [=](const OneGunRoll& roll)
+  {
+    HitResult result;
+    for (auto die : roll)
+    {
+      if (1 == die)
+        result.push_back(false);
+      else if (6 == die)
+        result.push_back(true);
+      else
+        result.push_back(die + computer - shield >= 6);
+    }
+    return result;
+  };
+}
+
+ResultOfRoll resultOfAttack(const Ship& shooter, const AttackRoll& roll, const Ship& target)
+{
+  auto attackFunc = resultOfAttackPart(shooter.computer, target.shield);
+  return {
+    attackFunc(roll.yellowDice),
+    attackFunc(roll.orangeDice),
+    attackFunc(roll.redDice)
   };
 }
 
@@ -145,6 +174,20 @@ std::ostream& operator<<(std::ostream& o, const Fleet& fleet)
   return o;
 }
 
+void printTestAttackResult(Fleet& attacker, Fleet& defender)
+{
+  for (const auto& s : attacker.ships())
+  {
+    auto roll = attack(ship(s));
+    std::cout << roll << std::endl;
+    std::cout << "Compare to targets:\n";
+    for (const auto& d : defender.ships())
+    {
+      std::cout << resultOfAttack(ship(s), roll, ship(d)) << "\n";
+    }
+  }
+}
+
 void oneRoundOfCombat(Fleet& attacker, Fleet& defender)
 {
   if (&attacker == &defender)
@@ -154,14 +197,9 @@ void oneRoundOfCombat(Fleet& attacker, Fleet& defender)
   }
 
   std::cout << "Round of combat:\nAttacker\n" << attacker << "\n";
-
-  for (const auto& s : attacker.ships())
-    std::cout << attack(ship(s)) << std::endl;
-
+  printTestAttackResult(attacker, defender);
   std::cout  << "\nDefender\n" << defender << std::endl;
-
-  for (const auto& s : defender.ships())
-    std::cout << attack(ship(s)) << std::endl;
+  printTestAttackResult(defender, attacker);
 }
 
 void readFleets()
