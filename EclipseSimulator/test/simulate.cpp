@@ -1,6 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <random>
+#include <iterator>
+
+int roll()
+{
+  static std::random_device rd;  //Will be used to obtain a seed for the random number engine
+  static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+  static std::uniform_int_distribution<> dis(1, 6);
+  return dis(gen);
+}
 
 struct Ship
 {
@@ -12,6 +22,49 @@ struct Ship
   int redGuns;
   int initiative;
 };
+
+using GunRoll = std::vector<int>;
+
+std::ostream& operator<<(std::ostream& o, const GunRoll& g)
+{
+  std::copy(g.cbegin(), g.cend(), std::ostream_iterator<int>(o, ", "));
+  return o;
+}
+
+struct AttackRoll
+{
+  GunRoll yellowDice;
+  GunRoll orangeDice;
+  GunRoll redDice;
+};
+
+std::ostream& operator<<(std::ostream& o, const AttackRoll& g)
+{
+  if (!g.yellowDice.empty())
+    o << "Yellow: " << g.yellowDice << "\n";
+  if (!g.orangeDice.empty())
+    o << "Orange: " << g.orangeDice << "\n";
+  if (!g.redDice.empty())
+    o << "Red: " << g.redDice << "\n";
+  return o;
+}
+
+GunRoll rollGuns(const Ship& ship, int Ship::*gun)
+{
+  GunRoll gunRoll;
+  for (int i = 0; i < ship.*gun; ++i)
+    gunRoll.push_back(roll() + ship.computer);
+  return gunRoll;
+}
+
+AttackRoll attack(const Ship& ship)
+{
+  return {
+    rollGuns(ship, &Ship::yellowGuns),
+    rollGuns(ship, &Ship::orangeGuns),
+    rollGuns(ship, &Ship::redGuns)
+  };
+}
 
 Ship readShip()
 {
@@ -36,6 +89,11 @@ std::ostream& operator<<(std::ostream& o, const Ship& ship)
 }
 
 using ShipWithHitPoints = std::tuple<Ship, int>;
+
+const Ship& ship(const ShipWithHitPoints& shp)
+{
+  return std::get<0>(shp);
+}
 
 std::ostream& operator<<(std::ostream& o, const ShipWithHitPoints& ship)
 {
@@ -85,11 +143,18 @@ void oneRoundOfCombat(Fleet& attacker, Fleet& defender)
     return;
   }
 
-  std::cout << "Round of combat:\nAttacker\n" << attacker
-    << "Defender\n" << defender << std::endl;
+  std::cout << "Round of combat:\nAttacker\n" << attacker << "\n";
+
+  for (const auto& s : attacker.ships())
+    std::cout << attack(ship(s)) << std::endl;
+
+  std::cout  << "\nDefender\n" << defender << std::endl;
+
+  for (const auto& s : defender.ships())
+    std::cout << attack(ship(s)) << std::endl;
 }
 
-int main(int argc, char** argv)
+void readFleets()
 {
   std::cout << "Eclipse Simulator!\nShip A:" << std::endl;
 
@@ -100,15 +165,17 @@ int main(int argc, char** argv)
 
   std::cout << "Read these ships:\n"
     << shipA << "\n" << shipB << std::endl;
+}
 
-  Fleet f { {"red"}, { shipA, shipB }};
+int main(int argc, char** argv)
+{
+  Ship shipA {1,0,0,1,0,0,2};
+  Ship shipB {2,0,1,2,0,0,1};
 
-  std::cout << "Here is the fleet:\n";
-  for (const auto& s : f.ships())
-    std::cout << s << "\n";
+  Fleet f1 { {"red"}, { shipA }};
+  Fleet f2 { {"blue"}, { shipB }};
 
-  Fleet f2(f);
-  oneRoundOfCombat(f, f2);
+  oneRoundOfCombat(f1, f2);
 
   return 0;
 }
