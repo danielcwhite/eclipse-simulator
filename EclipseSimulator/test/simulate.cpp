@@ -179,11 +179,11 @@ void printTestAttackResult(Fleet& attacker, Fleet& defender)
   for (const auto& s : attacker.ships())
   {
     auto roll = attack(ship(s));
-    std::cout << roll << std::endl;
+    std::cout << "Roll: " << roll;
     std::cout << "Compare to targets:\n";
     for (const auto& d : defender.ships())
     {
-      std::cout << resultOfAttack(ship(s), roll, ship(d)) << "\n";
+      std::cout << "\t" << resultOfAttack(ship(s), roll, ship(d));
     }
   }
 }
@@ -196,9 +196,9 @@ void oneRoundOfCombat(Fleet& attacker, Fleet& defender)
     return;
   }
 
-  std::cout << "Round of combat:\nAttacker\n" << attacker << "\n";
+  std::cout << "Round of combat:\nAttacker: " << attacker << "\n";
   printTestAttackResult(attacker, defender);
-  std::cout  << "\nDefender\n" << defender << std::endl;
+  std::cout  << "\nDefender: " << defender << std::endl;
   printTestAttackResult(defender, attacker);
 }
 
@@ -215,7 +215,7 @@ void readFleets()
     << shipA << "\n" << shipB << std::endl;
 }
 
-int main(int argc, char** argv)
+int main1(int argc, char** argv)
 {
   Ship shipA {1,0,0,1,0,0,2};
   Ship shipB {2,0,1,2,0,0,1};
@@ -224,6 +224,25 @@ int main(int argc, char** argv)
   Fleet f2 { {"blue"}, { shipB }};
 
   oneRoundOfCombat(f1, f2);
+
+  return 0;
+}
+
+int main(int argc, char** argv)
+{
+  if (argc < 2)
+    return 1;
+
+  std::cout << argv[1] << " base interceptors vs 1 ancient interceptor" << std::endl;
+
+  Ship playerInter { 0, 0, 0, 1, 0, 0, 2 };
+  Ship ancientInter { 2, 0, 1, 2, 0, 0, 1 };
+
+  Fleet player { { "player" }, {} };
+  player.addNewShip(playerInter, atoi(argv[1]));
+  Fleet ancient { { "ancients" }, { ancientInter }};
+
+  oneRoundOfCombat(player, ancient);
 
   return 0;
 }
