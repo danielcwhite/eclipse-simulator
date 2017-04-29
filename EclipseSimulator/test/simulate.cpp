@@ -13,7 +13,7 @@ int roll()
   return dis(gen);
 }
 
-struct Ship
+struct ShipSpec
 {
   int hull;
   int shield;
@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
   return o;
 }
 
-OneGunRoll rollGuns(const Ship& ship, int Ship::*gun)
+OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
 {
   OneGunRoll gunRoll;
   for (int i = 0; i < ship.*gun; ++i)
@@ -68,12 +68,12 @@ OneGunRoll rollGuns(const Ship& ship, int Ship::*gun)
   return gunRoll;
 }
 
-AttackRoll attack(const Ship& ship)
+AttackRoll attack(const ShipSpec& ship)
 {
   return {
-    rollGuns(ship, &Ship::yellowGuns),
-    rollGuns(ship, &Ship::orangeGuns),
-    rollGuns(ship, &Ship::redGuns)
+    rollGuns(ship, &ShipSpec::yellowGuns),
+    rollGuns(ship, &ShipSpec::orangeGuns),
+    rollGuns(ship, &ShipSpec::redGuns)
   };
 }
 
@@ -95,7 +95,7 @@ std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int
   };
 }
 
-ResultOfRoll resultOfAttack(const Ship& shooter, const AttackRoll& roll, const Ship& target)
+ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target)
 {
   auto attackFunc = resultOfAttackPart(shooter.computer, target.shield);
   return {
@@ -105,20 +105,20 @@ ResultOfRoll resultOfAttack(const Ship& shooter, const AttackRoll& roll, const S
   };
 }
 
-Ship readShip()
+ShipSpec readShip()
 {
   std::cout << "Enter ship details:\n";
   std::cout << "hull shield computer yellow orange red initiative:\n";
-  Ship ship;
+  ShipSpec ship;
   std::cin >> ship.hull >> ship.shield >> ship.computer >> ship.yellowGuns >> ship.orangeGuns
     >> ship.redGuns >> ship.initiative;
 
   return ship;
 }
 
-std::ostream& operator<<(std::ostream& o, const Ship& ship)
+std::ostream& operator<<(std::ostream& o, const ShipSpec& ship)
 {
-  return o << "Ship(h" << ship.hull
+  return o << "ShipSpec(h" << ship.hull
     << ",s" << ship.shield
     << ",c" << ship.computer
     << "," << ship.yellowGuns
@@ -127,35 +127,74 @@ std::ostream& operator<<(std::ostream& o, const Ship& ship)
     << "d4,i" << ship.initiative << ")";
 }
 
-using ShipWithHitPoints = std::tuple<Ship, int>;
-
-const Ship& ship(const ShipWithHitPoints& shp)
+struct Ship
 {
-  return std::get<0>(shp);
+  explicit Ship(const ShipSpec& s) :
+    spec(s), hitPoints(s.hull + 1), attackCount(0)
+  {}
+  Ship(const ShipSpec& s, int hp, int atk) :
+    spec(s), hitPoints(hp), attackCount(atk)
+  {}
+  const ShipSpec spec;
+  const int hitPoints;
+  const int attackCount;
+
+  Ship attack() const
+  {
+    return Ship { spec, hitPoints, attackCount + 1 };
+  }
+
+  Ship takeDamage(int dmg) const
+  {
+    return Ship { spec, hitPoints - dmg, attackCount };
+  }
+
+  bool operator<(const Ship& other) const
+  {
+    return spec.initiative < other.spec.initiative;
+  }
+
+  bool operator>(const Ship& other) const
+  {
+    return spec.initiative > other.spec.initiative;
+  }
+};
+
+using FightingShip = std::tuple<Ship, bool>;
+
+// Defender > Attacker ==>
+FightingShip attacker(const Ship& ship)
+{
+  return { ship, false };
 }
 
-std::ostream& operator<<(std::ostream& o, const ShipWithHitPoints& s)
+FightingShip defender(const Ship& ship)
 {
-  const auto& shipDesc = ship(s);
-  return o << shipDesc << " : " << std::get<1>(s) << "/" << (shipDesc.hull+1) << " hp";
+  return { ship, true };
 }
 
-class Fleet
+std::ostream& operator<<(std::ostream& o, const Ship& ship)
+{
+  return o << ship.spec << " : " << ship.hitPoints << "/"
+    << (ship.spec.hull+1) << " hp atk#" << ship.attackCount;
+}
+
+class FleetSpec
 {
 public:
 
-  using ShipList = std::vector<ShipWithHitPoints>;
+  using ShipList = std::vector<Ship>;
 
-  Fleet(const std::string& name, std::initializer_list<Ship> ships) : name_(name)
+  FleetSpec(const std::string& name, std::initializer_list<ShipSpec> ships) : name_(name)
   {
     for (const auto& ship : ships)
       addNewShip(ship, 1);
   }
 
-  void addNewShip(const Ship& ship, int count)
+  void addNewShip(const ShipSpec& ship, int count)
   {
     for (int i = 0; i < count; ++i)
-      ships_.emplace_back(ship, ship.hull + 1);
+      ships_.emplace_back(ship);
   }
 
   const ShipList& ships() const { return ships_; }
@@ -166,7 +205,7 @@ private:
   std::string name_;
 };
 
-std::ostream& operator<<(std::ostream& o, const Fleet& fleet)
+std::ostream& operator<<(std::ostream& o, const FleetSpec& fleet)
 {
   o << fleet.name() << "\n";
   for (const auto& s : fleet.ships())
@@ -174,21 +213,21 @@ std::ostream& operator<<(std::ostream& o, const Fleet& fleet)
   return o;
 }
 
-void printTestAttackResult(Fleet& attacker, Fleet& defender)
+void printTestAttackResult(FleetSpec& attacker, FleetSpec& defender)
 {
-  for (const auto& s : attacker.ships())
+  for (const auto& a : attacker.ships())
   {
-    auto roll = attack(ship(s));
+    auto roll = attack(a.spec);
     std::cout << "Roll: " << roll;
     std::cout << "Compare to targets:\n";
     for (const auto& d : defender.ships())
     {
-      std::cout << "\t" << resultOfAttack(ship(s), roll, ship(d));
+      std::cout << "\t" << resultOfAttack(a.spec, roll, d.spec);
     }
   }
 }
 
-void oneRoundOfCombat(Fleet& attacker, Fleet& defender)
+void oneRoundOfCombat(FleetSpec& attacker, FleetSpec& defender)
 {
   if (&attacker == &defender)
   {
@@ -217,11 +256,11 @@ void readFleets()
 
 int main1(int argc, char** argv)
 {
-  Ship shipA {1,0,0,1,0,0,2};
-  Ship shipB {2,0,1,2,0,0,1};
+  ShipSpec shipA {1,0,0,1,0,0,2};
+  ShipSpec shipB {2,0,1,2,0,0,1};
 
-  Fleet f1 { {"red"}, { shipA }};
-  Fleet f2 { {"blue"}, { shipB }};
+  FleetSpec f1 { {"red"}, { shipA }};
+  FleetSpec f2 { {"blue"}, { shipB }};
 
   oneRoundOfCombat(f1, f2);
 
@@ -235,12 +274,12 @@ int main(int argc, char** argv)
 
   std::cout << argv[1] << " base interceptors vs 1 ancient interceptor" << std::endl;
 
-  Ship playerInter { 0, 0, 0, 1, 0, 0, 2 };
-  Ship ancientInter { 2, 0, 1, 2, 0, 0, 1 };
+  ShipSpec playerInter { 0, 0, 0, 1, 0, 0, 2 };
+  ShipSpec ancientInter { 2, 0, 1, 2, 0, 0, 1 };
 
-  Fleet player { { "player" }, {} };
+  FleetSpec player { { "player" }, {} };
   player.addNewShip(playerInter, atoi(argv[1]));
-  Fleet ancient { { "ancients" }, { ancientInter }};
+  FleetSpec ancient { { "ancients" }, { ancientInter }};
 
   oneRoundOfCombat(player, ancient);
 
