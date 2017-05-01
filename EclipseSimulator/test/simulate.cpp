@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <deque>
 #include <tuple>
 #include <random>
 #include <iterator>
@@ -130,24 +131,13 @@ std::ostream& operator<<(std::ostream& o, const ShipSpec& ship)
 struct Ship
 {
   explicit Ship(const ShipSpec& s) :
-    spec(s), hitPoints(s.hull + 1), attackCount(0)
+    spec(s), hitPoints(s.hull + 1)
   {}
-  Ship(const ShipSpec& s, int hp, int atk) :
-    spec(s), hitPoints(hp), attackCount(atk)
+  Ship(const ShipSpec& s, int hp) :
+    spec(s), hitPoints(hp)
   {}
   const ShipSpec spec;
-  const int hitPoints;
-  const int attackCount;
-
-  Ship attack() const
-  {
-    return Ship { spec, hitPoints, attackCount + 1 };
-  }
-
-  Ship takeDamage(int dmg) const
-  {
-    return Ship { spec, hitPoints - dmg, attackCount };
-  }
+  int hitPoints;
 
   bool operator<(const Ship& other) const
   {
@@ -160,30 +150,36 @@ struct Ship
   }
 };
 
-using FightingShip = std::tuple<Ship, bool>;
+struct FightingShip : std::tuple<Ship, bool>
+{
+  FightingShip(const ShipSpec& ship, bool isDefender) :
+    std::tuple<Ship, bool>(ship, isDefender) {}
+  const ShipSpec& spec() const { return std::get<0>(*this).spec; }
+};
 
 // Defender > Attacker ==>
-FightingShip attacker(const Ship& ship)
+struct Attacker : FightingShip
 {
-  return { ship, false };
-}
+  explicit Attacker(const ShipSpec& ship) : FightingShip(ship, false) {}
+};
 
-FightingShip defender(const Ship& ship)
+struct Defender : FightingShip
 {
-  return { ship, true };
-}
+  explicit Defender(const ShipSpec& ship) : FightingShip(ship, true) {}
+};
 
 std::ostream& operator<<(std::ostream& o, const Ship& ship)
 {
   return o << ship.spec << " : " << ship.hitPoints << "/"
-    << (ship.spec.hull+1) << " hp atk#" << ship.attackCount;
+    << (ship.spec.hull+1) << " hp";
 }
 
+template <class ShipType>
 class FleetSpec
 {
 public:
 
-  using ShipList = std::vector<Ship>;
+  using ShipList = std::vector<ShipType>;
 
   FleetSpec(const std::string& name, std::initializer_list<ShipSpec> ships) : name_(name)
   {
@@ -205,40 +201,49 @@ private:
   std::string name_;
 };
 
-std::ostream& operator<<(std::ostream& o, const FleetSpec& fleet)
+using AttackingFleet = FleetSpec<Attacker>;
+using DefendingFleet = FleetSpec<Defender>;
+
+template <class ShipType>
+std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
 {
   o << fleet.name() << "\n";
   for (const auto& s : fleet.ships())
-    o << s << "\n";
+    o << s.spec() << "\n";
   return o;
 }
 
-void printTestAttackResult(FleetSpec& attacker, FleetSpec& defender)
+void printTestAttackResult(const AttackingFleet& attacker, const DefendingFleet& defender)
 {
   for (const auto& a : attacker.ships())
   {
-    auto roll = attack(a.spec);
+    auto roll = attack(a.spec());
     std::cout << "Roll: " << roll;
     std::cout << "Compare to targets:\n";
     for (const auto& d : defender.ships())
     {
-      std::cout << "\t" << resultOfAttack(a.spec, roll, d.spec);
+      std::cout << "\t" << resultOfAttack(a.spec(), roll, d.spec());
     }
   }
 }
 
-void oneRoundOfCombat(FleetSpec& attacker, FleetSpec& defender)
+class Battle
 {
-  if (&attacker == &defender)
+public:
+  Battle(const AttackingFleet& attacker, const DefendingFleet& defender)
   {
-    std::cout << "Cannot attack yourself!" << std::endl;
-    return;
-  }
 
+  }
+private:
+  std::deque<FightingShip> allShips_, firedShips_;
+};
+
+void oneRoundOfCombat(const AttackingFleet& attacker, const DefendingFleet& defender)
+{
   std::cout << "Round of combat:\nAttacker: " << attacker << "\n";
   printTestAttackResult(attacker, defender);
-  std::cout  << "\nDefender: " << defender << std::endl;
-  printTestAttackResult(defender, attacker);
+  //std::cout  << "\nDefender: " << defender << std::endl;
+  //printTestAttackResult(defender, attacker);
 }
 
 void readFleets()
@@ -254,19 +259,6 @@ void readFleets()
     << shipA << "\n" << shipB << std::endl;
 }
 
-int main1(int argc, char** argv)
-{
-  ShipSpec shipA {1,0,0,1,0,0,2};
-  ShipSpec shipB {2,0,1,2,0,0,1};
-
-  FleetSpec f1 { {"red"}, { shipA }};
-  FleetSpec f2 { {"blue"}, { shipB }};
-
-  oneRoundOfCombat(f1, f2);
-
-  return 0;
-}
-
 int main(int argc, char** argv)
 {
   if (argc < 2)
@@ -277,10 +269,12 @@ int main(int argc, char** argv)
   ShipSpec playerInter { 0, 0, 0, 1, 0, 0, 2 };
   ShipSpec ancientInter { 2, 0, 1, 2, 0, 0, 1 };
 
-  FleetSpec player { { "player" }, {} };
+  AttackingFleet player { { "player" }, {} };
   player.addNewShip(playerInter, atoi(argv[1]));
-  FleetSpec ancient { { "ancients" }, { ancientInter }};
+  DefendingFleet ancient { { "ancients" }, { ancientInter }};
 
+  Battle battle(player, ancient);
+  //battle.oneRound();
   oneRoundOfCombat(player, ancient);
 
   return 0;
