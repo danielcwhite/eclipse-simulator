@@ -5,6 +5,7 @@
 #include <random>
 #include <iterator>
 #include <functional>
+#include <algorithm>
 
 int roll()
 {
@@ -136,42 +137,50 @@ struct Ship
   Ship(const ShipSpec& s, int hp) :
     spec(s), hitPoints(hp)
   {}
-  const ShipSpec spec;
+  ShipSpec spec;
   int hitPoints;
+};
 
-  bool operator<(const Ship& other) const
+struct AttackOrder
+{
+  bool operator()(const Ship& a, const Ship& b) const
   {
-    return spec.initiative < other.spec.initiative;
-  }
-
-  bool operator>(const Ship& other) const
-  {
-    return spec.initiative > other.spec.initiative;
+    return a.spec.initiative > b.spec.initiative;
   }
 };
+
+bool operator<(const Ship& a, const Ship& b)
+{
+  return AttackOrder()(a, b);
+}
 
 struct FightingShip : std::tuple<Ship, bool>
 {
-  FightingShip(const ShipSpec& ship, bool isDefender) :
-    std::tuple<Ship, bool>(ship, isDefender) {}
+  FightingShip(const ShipSpec& ship, bool isAttacker) :
+    std::tuple<Ship, bool>(ship, isAttacker) {}
   const ShipSpec& spec() const { return std::get<0>(*this).spec; }
 };
 
-// Defender > Attacker ==>
+// Defender < Attacker ==>
 struct Attacker : FightingShip
 {
-  explicit Attacker(const ShipSpec& ship) : FightingShip(ship, false) {}
+  explicit Attacker(const ShipSpec& ship) : FightingShip(ship, true) {}
 };
 
 struct Defender : FightingShip
 {
-  explicit Defender(const ShipSpec& ship) : FightingShip(ship, true) {}
+  explicit Defender(const ShipSpec& ship) : FightingShip(ship, false) {}
 };
 
 std::ostream& operator<<(std::ostream& o, const Ship& ship)
 {
   return o << ship.spec << " : " << ship.hitPoints << "/"
     << (ship.spec.hull+1) << " hp";
+}
+
+std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
+{
+  return o << std::get<0>(fs) << " " << (std::get<1>(fs) ? "atk" : "def");
 }
 
 template <class ShipType>
@@ -232,7 +241,29 @@ class Battle
 public:
   Battle(const AttackingFleet& attacker, const DefendingFleet& defender)
   {
+    std::copy(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_));
+    std::copy(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_));
+    std::sort(allShips_.begin(), allShips_.end());
 
+    std::cout << "Battle with these sorted ships:\n";
+    for (const auto& ship : allShips_)
+    {
+      std::cout << "\t" << ship << "\n";
+    }
+  }
+
+  void oneRound()
+  {
+    for (const auto& attacker : allShips_)
+    {
+      auto roll = attack(attacker.spec());
+      std::cout << "Roll: " << roll;
+      std::cout << "Compare to targets:\n";
+      for (const auto& defender : allShips_)
+      {
+        std::cout << "\t" << resultOfAttack(attacker.spec(), roll, defender.spec());
+      }
+    }
   }
 private:
   std::deque<FightingShip> allShips_, firedShips_;
@@ -274,8 +305,7 @@ int main(int argc, char** argv)
   DefendingFleet ancient { { "ancients" }, { ancientInter }};
 
   Battle battle(player, ancient);
-  //battle.oneRound();
-  oneRoundOfCombat(player, ancient);
-
+  battle.oneRound();
+  
   return 0;
 }
