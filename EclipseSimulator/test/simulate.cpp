@@ -222,20 +222,6 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
   return o;
 }
 
-void printTestAttackResult(const AttackingFleet& attacker, const DefendingFleet& defender)
-{
-  for (const auto& a : attacker.ships())
-  {
-    auto roll = attack(a.spec());
-    std::cout << "Roll: " << roll;
-    std::cout << "Compare to targets:\n";
-    for (const auto& d : defender.ships())
-    {
-      std::cout << "\t" << resultOfAttack(a.spec(), roll, d.spec());
-    }
-  }
-}
-
 class Battle
 {
 public:
@@ -246,36 +232,31 @@ public:
     std::sort(allShips_.begin(), allShips_.end());
 
     std::cout << "Battle with these sorted ships:\n";
+    auto i = 1;
     for (const auto& ship : allShips_)
     {
-      std::cout << "\t" << ship << "\n";
+      std::cout << i++ << "\t" << ship << "\n";
     }
   }
 
   void oneRound()
   {
+    auto i = 1;
     for (const auto& attacker : allShips_)
     {
       auto roll = attack(attacker.spec());
-      std::cout << "Roll: " << roll;
+      std::cout << i++ << " Roll: " << roll;
       std::cout << "Compare to targets:\n";
       for (const auto& defender : allShips_)
       {
-        std::cout << "\t" << resultOfAttack(attacker.spec(), roll, defender.spec());
+        if (std::get<1>(attacker) != std::get<1>(defender))
+          std::cout << "\t" << resultOfAttack(attacker.spec(), roll, defender.spec());
       }
     }
   }
 private:
   std::deque<FightingShip> allShips_, firedShips_;
 };
-
-void oneRoundOfCombat(const AttackingFleet& attacker, const DefendingFleet& defender)
-{
-  std::cout << "Round of combat:\nAttacker: " << attacker << "\n";
-  printTestAttackResult(attacker, defender);
-  //std::cout  << "\nDefender: " << defender << std::endl;
-  //printTestAttackResult(defender, attacker);
-}
 
 void readFleets()
 {
@@ -306,6 +287,6 @@ int main(int argc, char** argv)
 
   Battle battle(player, ancient);
   battle.oneRound();
-  
+
   return 0;
 }
