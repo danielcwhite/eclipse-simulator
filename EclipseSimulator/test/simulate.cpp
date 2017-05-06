@@ -159,9 +159,17 @@ struct FightingShip : std::tuple<Ship, bool>
   FightingShip(const ShipSpec& ship, bool isAttacker) :
     std::tuple<Ship, bool>(ship, isAttacker) {}
   const ShipSpec& spec() const { return std::get<0>(*this).spec; }
+  bool isFighting(const FightingShip& other) const
+  {
+    return std::get<1>(*this) != std::get<1>(other);
+  }
+  void applyDamage(int damage)
+  {
+    std::get<0>(*this).hitPoints -= damage;
+  }
 };
 
-// Defender < Attacker ==>
+// Defender < Attacker ==> Def = 0/false, Atk = 1/true
 struct Attacker : FightingShip
 {
   explicit Attacker(const ShipSpec& ship) : FightingShip(ship, true) {}
@@ -222,6 +230,24 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
   return o;
 }
 
+class DamageApplier
+{
+public:
+  DamageApplier(const FightingShip& attacker) : attacker_(attacker)
+  {
+    roll_ = attack(attacker.spec());
+    std::cout << "  Roll: \n\t" << roll_;
+  }
+  void operator()(FightingShip& target) const
+  {
+    if (attacker_.isFighting(target))
+      std::cout << "\t" << resultOfAttack(attacker_.spec(), roll_, target.spec());
+  }
+private:
+  const FightingShip& attacker_;
+  AttackRoll roll_;
+};
+
 class Battle
 {
 public:
@@ -242,17 +268,19 @@ public:
   void oneRound()
   {
     auto i = 1;
-    for (const auto& attacker : allShips_)
+    while (firedShips_.size() < allShips_.size())
     {
-      auto roll = attack(attacker.spec());
-      std::cout << i++ << " Roll: " << roll;
+      auto attacker = allShips_.front();
+      allShips_.pop_front();
+      std::cout << i++;
+      DamageApplier func(attacker);
       std::cout << "Compare to targets:\n";
-      for (const auto& defender : allShips_)
-      {
-        if (std::get<1>(attacker) != std::get<1>(defender))
-          std::cout << "\t" << resultOfAttack(attacker.spec(), roll, defender.spec());
-      }
+      std::for_each(allShips_.begin(), allShips_.end(), func);
+
+      firedShips_.push_back(attacker);
+      allShips_.push_back(attacker);
     }
+    firedShips_.clear();
   }
 private:
   std::deque<FightingShip> allShips_, firedShips_;
