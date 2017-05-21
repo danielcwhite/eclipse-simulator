@@ -167,6 +167,10 @@ struct FightingShip : std::tuple<Ship, bool>
   {
     std::get<0>(*this).hitPoints -= damage;
   }
+  bool isAlive() const
+  {
+    return std::get<0>(*this).hitPoints > 0;
+  }
 };
 
 // Defender < Attacker ==> Def = 0/false, Atk = 1/true
@@ -188,7 +192,7 @@ std::ostream& operator<<(std::ostream& o, const Ship& ship)
 
 std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
 {
-  return o << std::get<0>(fs) << " " << (std::get<1>(fs) ? "atk" : "def");
+  return o << std::get<0>(fs) << " " << (std::get<1>(fs) ? "atk " : "def ") << &fs;
 }
 
 template <class ShipType>
@@ -238,15 +242,22 @@ public:
     roll_ = attack(attacker.spec());
     std::cout << "  Roll: \t" << roll_;
   }
-  void operator()(FightingShip& target) const
+  void operator()(FightingShip& target)
   {
     if (attacker_.isFighting(target))
     {
       auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
-      std::cout << "\t" << result;
-      if (std::any_of(result.yellowDice.begin(), result.yellowDice.end(), [](bool x) { return x; }))
+      //std::cout << "\t" << result;
+
+      for (auto i = 0; i < result.yellowDice.size(); ++i)
       {
-        std::cout << "\t hits.\n";
+        if (result.yellowDice[i] && target.isAlive())
+        {
+          std::cout << "\t hits.\n";
+          target.applyDamage(1);
+          std::cout << "Target is now " << target << std::endl;
+          roll_.yellowDice[i] = 1;
+        }
       }
     }
   }
@@ -309,16 +320,22 @@ void readFleets()
 int main(int argc, char** argv)
 {
   if (argc < 2)
+  {
+    std::cout << "Usage: eclipse NUM_INTERCEPTORS [NUM_ANCIENTS=1]" << std::endl;
     return 1;
+  }
 
-  std::cout << argv[1] << " base interceptors vs 1 ancient interceptor" << std::endl;
+  auto playerInts = argv[1];
+  auto ancients = argc > 2 ? argv[2] : "1";
+  std::cout << playerInts << " base interceptor(s) vs " << ancients << " ancient interceptor(s)" << std::endl;
 
-  ShipSpec playerInter { 0, 0, 0, 1, 0, 0, 2 };
-  ShipSpec ancientInter { 2, 0, 1, 2, 0, 0, 1 };
+  ShipSpec playerInter { 0, 0, 0, 1, 0, 0, 3 };
+  ShipSpec ancientInter { 2, 0, 1, 2, 0, 0, 2 };
 
   AttackingFleet player { { "player" }, {} };
-  player.addNewShip(playerInter, atoi(argv[1]));
-  DefendingFleet ancient { { "ancients" }, { ancientInter }};
+  player.addNewShip(playerInter, atoi(playerInts));
+  DefendingFleet ancient { { "ancients" }, {}};
+  ancient.addNewShip(ancientInter, atoi(ancients));
 
   Battle battle(player, ancient);
   battle.oneRound();
