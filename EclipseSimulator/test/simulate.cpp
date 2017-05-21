@@ -236,12 +236,19 @@ public:
   DamageApplier(const FightingShip& attacker) : attacker_(attacker)
   {
     roll_ = attack(attacker.spec());
-    std::cout << "  Roll: \n\t" << roll_;
+    std::cout << "  Roll: \t" << roll_;
   }
   void operator()(FightingShip& target) const
   {
     if (attacker_.isFighting(target))
-      std::cout << "\t" << resultOfAttack(attacker_.spec(), roll_, target.spec());
+    {
+      auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
+      std::cout << "\t" << result;
+      if (std::any_of(result.yellowDice.begin(), result.yellowDice.end(), [](bool x) { return x; }))
+      {
+        std::cout << "\t hits.\n";
+      }
+    }
   }
 private:
   const FightingShip& attacker_;
