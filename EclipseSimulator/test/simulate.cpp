@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <deque>
 #include <tuple>
@@ -235,13 +236,23 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
   return o;
 }
 
+std::ostream& log(bool toFile = true)
+{
+  if (toFile)
+  {
+    static std::ofstream file("logFile");
+    return file;
+  }
+  return std::cout;
+}
+
 class DamageApplier
 {
 public:
   DamageApplier(const FightingShip& attacker) : attacker_(attacker)
   {
     roll_ = attack(attacker.spec());
-    std::cout << "  Roll: \t" << roll_;
+    log() << "  Roll: \t" << roll_;
   }
   void operator()(FightingShip& target)
   {
@@ -253,9 +264,9 @@ public:
       {
         if (result.yellowDice[i] && target.isAlive())
         {
-          std::cout << "\t hits.\n";
+          log() << "\t hits.\n";
           target.applyDamage(1);
-          std::cout << "Target is now " << target << std::endl;
+          log() << "Target is now " << target << std::endl;
           roll_.yellowDice[i] = 1;
         }
       }
@@ -275,43 +286,59 @@ public:
     std::copy(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_));
     std::sort(allShips_.begin(), allShips_.end());
 
-    std::cout << "Battle with these sorted ships:\n";
-    auto i = 1;
-    for (const auto& ship : allShips_)
-    {
-      std::cout << i++ << "\t" << ship << "\n";
-    }
-    std::cout << std::endl;
+    // std::cout << "Battle with these sorted ships:\n";
+    // auto i = 1;
+    // for (const auto& ship : allShips_)
+    // {
+    //   std::cout << i++ << "\t" << ship << "\n";
+    // }
+    // std::cout << std::endl;
   }
 
-  void oneRound()
+  bool oneRound()
   {
+    if (battleComplete())
+      return false;
+
     auto i = 1;
     while (firedShips_.size() < allShips_.size())
     {
       auto attacker = allShips_.front();
       allShips_.pop_front();
 
-      std::cout << i++;
+      log() << i++;
       DamageApplier applyDamage(attacker);
       std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
 
       auto deadShipCleanup = [](const FightingShip& ship) { return !ship.isAlive(); };
-      std::cout << "\t\t~~~allShips before cleanup: " << allShips_.size();
+      //std::cout << "\t\t~~~allShips before cleanup: " << allShips_.size();
       allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
-      std::cout << " after cleanup: " << allShips_.size() << std::endl;
+      //std::cout << " after cleanup: " << allShips_.size() << std::endl;
       firedShips_.push_back(attacker);
       allShips_.push_back(attacker);
 
       if (battleComplete())
       {
-        std::cout << "\nBATTLE COMPLETE: victor is " << victorString_;
+        log() << "\nBATTLE COMPLETE: victor is " << victorString_ << std::endl;
+        return false;
       }
     }
     firedShips_.clear();
-    roundCount_++;
-    std::cout << "Round " << roundCount_ << " complete.\n";
+
+    return true;
   }
+
+  std::string fightToDeath()
+  {
+    do
+    {
+      roundCount_++;
+      log() << "Round " << roundCount_ << ":\n";
+    }
+    while (oneRound());
+    return victorString_;
+  }
+
 private:
   std::deque<FightingShip> allShips_, firedShips_;
   int roundCount_{0};
@@ -319,7 +346,17 @@ private:
 
   bool battleComplete()
   {
-
+    if (std::all_of(allShips_.begin(), allShips_.end(), [](const FightingShip& ship) { return ship.isAttacker(); }))
+    {
+      victorString_ = "Attacker";
+      return true;
+    }
+    if (std::all_of(allShips_.begin(), allShips_.end(), [](const FightingShip& ship) { return !ship.isAttacker(); }))
+    {
+      victorString_ = "Defender";
+      return true;
+    }
+    return false;
   }
 };
 
@@ -340,7 +377,7 @@ int main(int argc, char** argv)
 {
   if (argc < 2)
   {
-    std::cout << "Usage: eclipse NUM_INTERCEPTORS [NUM_ANCIENTS=1]" << std::endl;
+    std::cout << "Usage: eclipse NUM_INTERCEPTORS [NUM_ANCIENTS=1] [NUM_TRIALS=1000]" << std::endl;
     return 1;
   }
 
@@ -357,8 +394,7 @@ int main(int argc, char** argv)
   ancient.addNewShip(ancientInter, atoi(ancients));
 
   Battle battle(player, ancient);
-  battle.oneRound();
-  battle.oneRound();
+  battle.fightToDeath();
 
   return 0;
 }
