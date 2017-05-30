@@ -171,6 +171,7 @@ struct FightingShip : std::tuple<Ship, bool>
   {
     return std::get<0>(*this).hitPoints > 0;
   }
+  bool isAttacker() const { return std::get<1>(*this); }
 };
 
 // Defender < Attacker ==> Def = 0/false, Atk = 1/true
@@ -247,7 +248,6 @@ public:
     if (attacker_.isFighting(target))
     {
       auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
-      //std::cout << "\t" << result;
 
       for (auto i = 0; i < result.yellowDice.size(); ++i)
       {
@@ -281,6 +281,7 @@ public:
     {
       std::cout << i++ << "\t" << ship << "\n";
     }
+    std::cout << std::endl;
   }
 
   void oneRound()
@@ -290,18 +291,36 @@ public:
     {
       auto attacker = allShips_.front();
       allShips_.pop_front();
-      std::cout << i++;
-      DamageApplier func(attacker);
-      std::cout << "Compare to targets:\n";
-      std::for_each(allShips_.begin(), allShips_.end(), func);
 
+      std::cout << i++;
+      DamageApplier applyDamage(attacker);
+      std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
+
+      auto deadShipCleanup = [](const FightingShip& ship) { return !ship.isAlive(); };
+      std::cout << "\t\t~~~allShips before cleanup: " << allShips_.size();
+      allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
+      std::cout << " after cleanup: " << allShips_.size() << std::endl;
       firedShips_.push_back(attacker);
       allShips_.push_back(attacker);
+
+      if (battleComplete())
+      {
+        std::cout << "\nBATTLE COMPLETE: victor is " << victorString_;
+      }
     }
     firedShips_.clear();
+    roundCount_++;
+    std::cout << "Round " << roundCount_ << " complete.\n";
   }
 private:
   std::deque<FightingShip> allShips_, firedShips_;
+  int roundCount_{0};
+  std::string victorString_;
+
+  bool battleComplete()
+  {
+
+  }
 };
 
 void readFleets()
@@ -338,6 +357,7 @@ int main(int argc, char** argv)
   ancient.addNewShip(ancientInter, atoi(ancients));
 
   Battle battle(player, ancient);
+  battle.oneRound();
   battle.oneRound();
 
   return 0;
