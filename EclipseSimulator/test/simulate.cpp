@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 #include <deque>
 #include <tuple>
 #include <random>
@@ -393,8 +394,21 @@ int main(int argc, char** argv)
   DefendingFleet ancient { { "ancients" }, {}};
   ancient.addNewShip(ancientInter, atoi(ancients));
 
-  Battle battle(player, ancient);
-  battle.fightToDeath();
+  auto trials = argc > 3 ? atoi(argv[3]) : 1000;
+  std::map<std::string, int> results;
+  for (int i = 0; i < trials; ++i)
+  {
+    Battle battle(player, ancient);
+    auto result = battle.fightToDeath();
+    results[result]++;
+    log() << result << " wins" << std::endl;
+  }
+
+  std::cout << "After " << trials << " simulations, the results are: \n";
+  for (const auto& result : results)
+  {
+    std::cout << result.first << " won " << result.second << " times.\n";
+  }
 
   return 0;
 }
