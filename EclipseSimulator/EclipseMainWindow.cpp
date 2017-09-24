@@ -93,6 +93,8 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   widgets_.remove->setDisabled(true);
 
   editor_->hide();
+  connect(editor_, &QDialog::accepted, this, &ShipWidgetController::specAccepted);
+  connect(editor_, &QDialog::rejected, this, &ShipWidgetController::specRejected);
 }
 
 void ShipWidgetController::addShipPressed()
@@ -128,8 +130,19 @@ void ShipWidgetController::editShipPressed()
   editor_->show();
 }
 
+void ShipWidgetController::specAccepted()
+{
+  qDebug() << "spec accepted:" << name_;
+}
+
+void ShipWidgetController::specRejected()
+{
+  qDebug() << "spec rejected:" << name_;
+}
+
 ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent) : QDialog(parent)
 {
   setupUi(this);
   editShipGroupBox_->setTitle(editShipGroupBox_->title() + name);
+  setModal(true);
 }

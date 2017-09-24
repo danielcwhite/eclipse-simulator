@@ -8,6 +8,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include "../ShipSpec.hpp"
 
 int roll()
 {
@@ -16,17 +17,6 @@ int roll()
   static std::uniform_int_distribution<> dis(1, 6);
   return dis(gen);
 }
-
-struct ShipSpec
-{
-  int hull;
-  int shield;
-  int computer;
-  int yellowGuns;
-  int orangeGuns;
-  int redGuns;
-  int initiative;
-};
 
 template <typename T>
 using Roll = std::vector<T>;

@@ -63,7 +63,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="attackerInterceptorEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -120,7 +120,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="attackerCruiserEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -161,7 +161,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="attackerDreadnoughtEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -318,7 +318,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="defenderInterceptorEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -366,7 +366,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="defenderCruiserEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -414,7 +414,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="defenderDreadnoughtEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
@@ -462,7 +462,7 @@ QLabel { background: white}</string>
             <item row="1" column="0">
              <widget class="QPushButton" name="defenderStarbaseEditPushButton_">
               <property name="text">
-               <string>Edit Plan...</string>
+               <string>Edit Spec...</string>
               </property>
              </widget>
             </item>
