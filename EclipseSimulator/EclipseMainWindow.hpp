@@ -4,12 +4,38 @@
 #include <QMainWindow>
 #include "ui_EclipseSimulatorMainWindow.h"
 
+struct ShipWidgets
+{
+  QLabel* description;
+  QPushButton* edit;
+  QToolButton* add;
+  QToolButton* remove;
+  QLCDNumber* count;
+};
+
+class ShipWidgetController : public QObject
+{
+  Q_OBJECT
+public:
+  ShipWidgetController(ShipWidgets widgets, const QString& name, int maxShips, QObject* parent = nullptr);
+public Q_SLOTS:
+  void addShipPressed();
+  void removeShipPressed();
+private:
+  ShipWidgets widgets_;
+  QString name_;
+  const int maxShips_;
+};
+
 class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    EclipseMainWindow();
+  EclipseMainWindow();
+
+private:
+  std::vector<ShipWidgetController*> ships_;
 };
 
 
