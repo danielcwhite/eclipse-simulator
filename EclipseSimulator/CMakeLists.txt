@@ -29,21 +29,28 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fPIC")
 
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 SET(EclipseSimulatorGUI_SOURCES
-  EclipseMainWindow.cc
-  ShipEditor.cc
+  EclipseMainWindow.cpp
+  Main.cpp
+#  ShipEditor.cpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS
-  EclipseMainWindow.h
-  ShipEditor.h
+  EclipseMainWindow.hpp
+#  ShipEditor.hpp
 )
 
 SET(EclipseSimulatorGUI_FORMS
   EclipseSimulatorMainWindow.ui
-  ShipEditor.ui
+#  ShipEditor.ui
 )
 
 #SET(Interface_Application_RESOURCES
@@ -62,8 +69,10 @@ add_executable(EclipseSimulatorGUI
   #${Interface_Application_RESOURCES_RCC}
 )
 
-#TARGET_LINK_LIBRARIES(Interface_Application
+qt5_use_modules(EclipseSimulatorGUI Widgets)
+
+TARGET_LINK_LIBRARIES(EclipseSimulatorGUI
 #  ${NonPythonInterface_ApplicationLinkLibraries}
 #  Core_Python
-#  SCIRunPythonAPI
-#)
+  ${QT_LIBRARIES}
+)
