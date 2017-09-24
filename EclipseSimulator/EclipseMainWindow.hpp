@@ -4,7 +4,13 @@
 #include <QMainWindow>
 #include "ui_EclipseSimulatorMainWindow.h"
 
+class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
+{
+    Q_OBJECT
 
+public:
+    EclipseMainWindow();
+};
 
 
 #endif
