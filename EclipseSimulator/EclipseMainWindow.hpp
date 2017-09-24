@@ -21,6 +21,7 @@ public:
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();
+  void editShipPressed();
 private:
   ShipWidgets widgets_;
   QString name_;
