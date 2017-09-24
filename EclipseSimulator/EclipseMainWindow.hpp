@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "ui_EclipseSimulatorMainWindow.h"
+#include "ui_ShipSpecEditor.h"
 
 struct ShipWidgets
 {
@@ -17,7 +18,7 @@ class ShipWidgetController : public QObject
 {
   Q_OBJECT
 public:
-  ShipWidgetController(ShipWidgets widgets, const QString& name, int maxShips, QObject* parent = nullptr);
+  ShipWidgetController(ShipWidgets widgets, const QString& name, int maxShips, QWidget* parent = nullptr);
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();
@@ -26,6 +27,14 @@ private:
   ShipWidgets widgets_;
   QString name_;
   const int maxShips_;
+  class ShipSpecEditorDialog* editor_;
+};
+
+class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
+{
+  Q_OBJECT
+public:
+  explicit ShipSpecEditorDialog(const QString& name, QWidget* parent = nullptr);
 };
 
 class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow

@@ -50,7 +50,7 @@ SET(EclipseSimulatorGUI_HEADERS
 
 SET(EclipseSimulatorGUI_FORMS
   EclipseSimulatorMainWindow.ui
-#  ShipEditor.ui
+  ShipSpecEditor.ui
 )
 
 #SET(Interface_Application_RESOURCES

@@ -81,8 +81,8 @@ EclipseMainWindow::EclipseMainWindow()
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
-  int maxShips, QObject* parent) : QObject(parent), widgets_(widgets), name_(name),
-  maxShips_(maxShips)
+  int maxShips, QWidget* parent) : QObject(parent), widgets_(widgets), name_(name),
+  maxShips_(maxShips), editor_(new ShipSpecEditorDialog(name, parent))
 {
   qDebug() << "Setting up" << name_ << "widgets";
 
@@ -91,6 +91,8 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   connect(widgets_.edit, &QPushButton::clicked, this, &ShipWidgetController::editShipPressed);
 
   widgets_.remove->setDisabled(true);
+
+  editor_->hide();
 }
 
 void ShipWidgetController::addShipPressed()
@@ -123,5 +125,11 @@ void ShipWidgetController::removeShipPressed()
 
 void ShipWidgetController::editShipPressed()
 {
-  qDebug() << "display ship spec editor";
+  editor_->show();
+}
+
+ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent) : QDialog(parent)
+{
+  setupUi(this);
+  editShipGroupBox_->setTitle(editShipGroupBox_->title() + name);
 }
