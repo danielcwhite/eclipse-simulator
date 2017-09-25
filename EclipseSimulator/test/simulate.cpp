@@ -110,17 +110,6 @@ ShipSpec readShip()
   return ship;
 }
 
-std::ostream& operator<<(std::ostream& o, const ShipSpec& ship)
-{
-  return o << "ShipSpec(h" << ship.hull
-    << ",s" << ship.shield
-    << ",c" << ship.computer
-    << "," << ship.yellowGuns
-    << "d1," << ship.orangeGuns
-    << "d2," << ship.redGuns
-    << "d4,i" << ship.initiative << ")";
-}
-
 struct Ship
 {
   explicit Ship(const ShipSpec& s) :

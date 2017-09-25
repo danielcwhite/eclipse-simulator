@@ -2,6 +2,7 @@
 #define INTERFACE_APPLICATION_SCIRUN_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <ShipSpec.hpp>
 #include "ui_EclipseSimulatorMainWindow.h"
 #include "ui_ShipSpecEditor.h"
 
@@ -30,6 +31,7 @@ private:
   QString name_;
   const int maxShips_;
   class ShipSpecEditorDialog* editor_;
+  ShipSpec spec_;
 };
 
 class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
@@ -37,6 +39,12 @@ class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
   Q_OBJECT
 public:
   explicit ShipSpecEditorDialog(const QString& name, QWidget* parent = nullptr);
+  ShipSpec spec() const { return displayedSpec_; }
+  void setSpec(const ShipSpec& spec);
+public Q_SLOTS:
+  void editSpec(int newValue);
+private:
+  ShipSpec displayedSpec_;
 };
 
 class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
