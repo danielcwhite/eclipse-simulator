@@ -93,10 +93,12 @@ void EclipseMainWindow::setupBattleOrderView()
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 
-  auto rectangle = scene_->addRect(5, 5, 30, 15, outlinePen, blueBrush);
+  auto rectangle = scene_->addRect(5, 5, 30, 50, outlinePen, blueBrush);
 
-  //auto text = scene_->addText("Interceptor", QFont("Arial", 8) );
-  //text->setColor(Qt::white);
+  auto text = scene_->addText("I", QFont("Arial", 12) );
+  text->setPos(7, 7);
+
+  qDebug() << battleOrderGraphicsView_->mapToScene(battleOrderGraphicsView_->rect()).boundingRect();
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
