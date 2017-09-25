@@ -27,6 +27,7 @@ public Q_SLOTS:
   void specAccepted();
   void specRejected();
 private:
+  void updateSpecLabel();
   ShipWidgets widgets_;
   QString name_;
   const int maxShips_;

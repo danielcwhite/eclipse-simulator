@@ -94,6 +94,8 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   editor_->setSpec({});
   connect(editor_, &QDialog::accepted, this, &ShipWidgetController::specAccepted);
   connect(editor_, &QDialog::rejected, this, &ShipWidgetController::specRejected);
+
+  updateSpecLabel();
 }
 
 void ShipWidgetController::addShipPressed()
@@ -137,6 +139,20 @@ void ShipWidgetController::specAccepted()
   spec_ = editor_->spec();
   qDebug() << "spec accepted:" << name_;
   std::cout << '\t' << spec_ << std::endl;
+  updateSpecLabel();
+}
+
+void ShipWidgetController::updateSpecLabel()
+{
+  auto desc = tr("<i>^%1 *%2 +%3 -%4</i><p><b><font color=yellow>%5</font> <font color=orange>%6</font> <font color=red>%7</font></b>")
+    .arg(spec_.initiative)
+    .arg(spec_.hull)
+    .arg(spec_.computer)
+    .arg(spec_.shield)
+    .arg(spec_.yellowGuns)
+    .arg(spec_.orangeGuns)
+    .arg(spec_.redGuns);
+  widgets_.description->setText(desc);
 }
 
 void ShipWidgetController::specRejected()

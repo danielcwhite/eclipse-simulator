@@ -23,7 +23,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Initiative</string>
+         <string>Initiative ^</string>
         </property>
        </widget>
       </item>
@@ -33,7 +33,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Hull</string>
+         <string>Hull *</string>
         </property>
        </widget>
       </item>
@@ -43,7 +43,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Computer</string>
+         <string>Computer +</string>
         </property>
        </widget>
       </item>
@@ -53,7 +53,7 @@
       <item row="3" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Shield</string>
+         <string>Shield -</string>
         </property>
        </widget>
       </item>
@@ -63,7 +63,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Missiles</string>
+         <string>Missiles (TODO)</string>
         </property>
        </widget>
       </item>
@@ -76,6 +76,9 @@
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_6">
+        <property name="styleSheet">
+         <string notr="true">color:yellow</string>
+        </property>
         <property name="text">
          <string>1-Damage Guns</string>
         </property>
@@ -86,6 +89,9 @@
       </item>
       <item row="6" column="0">
        <widget class="QLabel" name="label_7">
+        <property name="styleSheet">
+         <string notr="true">color:orange</string>
+        </property>
         <property name="text">
          <string>2-Damage Guns</string>
         </property>
@@ -96,6 +102,9 @@
       </item>
       <item row="7" column="0">
        <widget class="QLabel" name="label_8">
+        <property name="styleSheet">
+         <string notr="true">color:red</string>
+        </property>
         <property name="text">
          <string>4-Damage Guns</string>
         </property>

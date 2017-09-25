@@ -14,18 +14,14 @@
    <string>Eclipse Simulator</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget { background: darkBlue } 
-
-QLCDNumber { background: yellow }
-
-QLabel { background: white}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="styleSheet">
-       <string notr="true">QGroupBox { background: rgb(255, 0, 0) }</string>
+       <string notr="true"/>
       </property>
       <property name="title">
        <string>Attacker</string>
@@ -280,7 +276,7 @@ QLabel { background: white}</string>
     <item>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="styleSheet">
-       <string notr="true">QGroupBox { background: darkGreen }</string>
+       <string notr="true"/>
       </property>
       <property name="title">
        <string>Defender</string>
