@@ -1,5 +1,6 @@
 #include <EclipseMainWindow.hpp>
 #include <QDebug>
+#include <QGraphicsItem>
 
 EclipseMainWindow::EclipseMainWindow()
 {
@@ -78,6 +79,24 @@ EclipseMainWindow::EclipseMainWindow()
       4,
       this)
   };
+
+  setupBattleOrderView();
+}
+
+void EclipseMainWindow::setupBattleOrderView()
+{
+  scene_ = new QGraphicsScene(this);
+  battleOrderGraphicsView_->setScene(scene_);
+  scene_->setBackgroundBrush(Qt::black);
+
+  QBrush blueBrush(Qt::blue);
+  QPen outlinePen(Qt::white);
+  outlinePen.setWidth(2);
+
+  auto rectangle = scene_->addRect(5, 5, 30, 15, outlinePen, blueBrush);
+
+  //auto text = scene_->addText("Interceptor", QFont("Arial", 8) );
+  //text->setColor(Qt::white);
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,

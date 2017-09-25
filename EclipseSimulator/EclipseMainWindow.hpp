@@ -56,6 +56,9 @@ public:
   EclipseMainWindow();
 
 private:
+  void setupBattleOrderView();
+
+  QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
 };
 
