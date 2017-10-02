@@ -89,16 +89,39 @@ void EclipseMainWindow::setupBattleOrderView()
   battleOrderGraphicsView_->setScene(scene_);
   scene_->setBackgroundBrush(Qt::black);
 
+  shipGraphics_ = new ShipGraphicsManager(scene_, this);
+  shipGraphics_->addShipRects();
+
+
+
+  //auto text = scene_->addText("I", QFont("Arial", 12) );
+  //text->setPos(7, 7);
+
+  //qDebug() << battleOrderGraphicsView_->mapToScene(battleOrderGraphicsView_->rect()).boundingRect();
+}
+
+ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
+  : QObject(parent), scene_(scene)
+{}
+
+void ShipGraphicsManager::addShipRects()
+{
   QBrush blueBrush(Qt::blue);
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 
-  auto rectangle = scene_->addRect(5, 5, 30, 50, outlinePen, blueBrush);
-
-  auto text = scene_->addText("I", QFont("Arial", 12) );
-  text->setPos(7, 7);
-
-  qDebug() << battleOrderGraphicsView_->mapToScene(battleOrderGraphicsView_->rect()).boundingRect();
+  const int w = 20;
+  const int h = 30;
+  const int spacing = 10;
+  for (int i = 0; i < 8; ++i)
+  {
+    rectItems_.push_back({});
+    for (int j = 0; j < 7; ++j)
+    {
+      auto rectangle = scene_->addRect(5 + i*(w + spacing), 5 + j*(h + spacing), w, h, outlinePen, Qt::black);
+      rectItems_[i].push_back(rectangle);
+    }
+  }
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,

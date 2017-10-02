@@ -26,6 +26,8 @@ public Q_SLOTS:
   void editShipPressed();
   void specAccepted();
   void specRejected();
+public Q_SIGNALS:
+  void shipAdded(const QString& name, bool attacker, int initiative);
 private:
   void updateSpecLabel();
   ShipWidgets widgets_;
@@ -33,6 +35,19 @@ private:
   const int maxShips_;
   class ShipSpecEditorDialog* editor_;
   ShipSpec spec_;
+};
+
+class ShipGraphicsManager : public QObject
+{
+  Q_OBJECT
+public:
+  explicit ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent = nullptr);
+  void addShipRectsBorders();
+public Q_SLOTS:
+  void addShipRect(const QString& name, bool attacker, int initiative);
+private:
+  QGraphicsScene* scene_;
+  std::vector<std::vector<QGraphicsItem*>> rectItems_;
 };
 
 class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
@@ -60,6 +75,7 @@ private:
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
+  ShipGraphicsManager* shipGraphics_;
 };
 
 
