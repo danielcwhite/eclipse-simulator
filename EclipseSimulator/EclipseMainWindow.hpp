@@ -26,8 +26,10 @@ public Q_SLOTS:
   void editShipPressed();
   void specAccepted();
   void specRejected();
-public Q_SIGNALS:
-  void shipAdded(const QString& name, bool attacker, int initiative);
+Q_SIGNALS:
+  void shipAdded(const QString& name, int initiative);
+  void shipRemoved(const QString& name);
+  void initiativeChanged(const QString& name, int initiative);
 private:
   void updateSpecLabel();
   ShipWidgets widgets_;
@@ -42,9 +44,10 @@ class ShipGraphicsManager : public QObject
   Q_OBJECT
 public:
   explicit ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent = nullptr);
-  void addShipRectsBorders();
+  void addShipBorders();
 public Q_SLOTS:
-  void addShipRect(const QString& name, bool attacker, int initiative);
+  void addShipRect(const QString& name, int initiative);
+  void removeShipRect(const QString& name);
 private:
   QGraphicsScene* scene_;
   std::vector<std::vector<QGraphicsItem*>> rectItems_;

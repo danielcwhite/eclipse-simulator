@@ -90,9 +90,12 @@ void EclipseMainWindow::setupBattleOrderView()
   scene_->setBackgroundBrush(Qt::black);
 
   shipGraphics_ = new ShipGraphicsManager(scene_, this);
-  shipGraphics_->addShipRects();
+  shipGraphics_->addShipBorders();
 
-
+  for (auto& shipWidget : ships_)
+  {
+    connect(shipWidget, &ShipWidgetController::shipAdded, shipGraphics_, &ShipGraphicsManager::addShipRect);
+  }
 
   //auto text = scene_->addText("I", QFont("Arial", 12) );
   //text->setPos(7, 7);
@@ -104,7 +107,7 @@ ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
   : QObject(parent), scene_(scene)
 {}
 
-void ShipGraphicsManager::addShipRects()
+void ShipGraphicsManager::addShipBorders()
 {
   QBrush blueBrush(Qt::blue);
   QPen outlinePen(Qt::white);
@@ -122,6 +125,12 @@ void ShipGraphicsManager::addShipRects()
       rectItems_[i].push_back(rectangle);
     }
   }
+}
+
+
+void ShipGraphicsManager::addShipRect(const QString& name, bool attacker, int initiative)
+{
+  qDebug() << __FUNCTION__ << name << attacker << initiative;
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
@@ -153,6 +162,7 @@ void ShipWidgetController::addShipPressed()
       widgets_.add->setDisabled(true);
     }
     widgets_.remove->setEnabled(true);
+    Q_EMIT shipAdded(name_, true, 1);
   }
 }
 
