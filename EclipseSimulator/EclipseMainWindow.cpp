@@ -131,23 +131,13 @@ void ShipGraphicsManager::addShipBorders()
     {
       auto rectangle = scene_->addRect(border + i*(w + spacing), border + j*(h + spacing), w, h, outlinePen, Qt::black);
       rectItems_[j][i].item = rectangle;
+      rectangle->setOpacity(0.1);
     }
   }
 }
 
-/*
-0 att int
-1 att cru
-2 att dre
-3 def int
-4 def cru
-5 def dre
-6 def stb
-*/
-
 void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 {
-  qDebug() << __FUNCTION__ << name << initiative;
   auto desc = name.split(' ');
   auto isAttacker = desc[0] == "Attacker";
   auto shipType = desc[1];
@@ -168,9 +158,10 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
     {
       shipIndex = j;
       qDebug() << "found empty type in grid";
+      break;
     }
   }
-  qDebug() << "ship type not in grid yet";
+
   auto& row = rectItems_[shipIndex];
   for (int i = 0; i < maxShips; ++i)
   {
@@ -181,6 +172,7 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
       row[newShipColumn].isAttacker = isAttacker;
       row[newShipColumn].initiative = initiative;
       row[newShipColumn].item->setBrush(color);
+      row[newShipColumn].item->setOpacity(1);
       break;
     }
   }
@@ -188,7 +180,35 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 
 void ShipGraphicsManager::removeShipRect(const QString& name)
 {
-  qDebug() << __FUNCTION__ << name;
+  auto desc = name.split(' ');
+  auto isAttacker = desc[0] == "Attacker";
+  auto shipType = desc[1];
+  auto leftSide = isAttacker;
+
+  int firstShip = leftSide ? 0 : maxShips - 1;
+  int shipIndex = -1;
+  for (int j = 0; j < maxShipTypes; ++j)
+  {
+    if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
+    {
+      qDebug() << "found ship type in grid";
+      shipIndex = j;
+      break;
+    }
+  }
+
+  auto& row = rectItems_[shipIndex];
+  for (int i = maxShips - 1; i >= 0; --i)
+  {
+    auto newShipColumn = leftSide ? i : maxShips - i - 1;
+    if (!row[newShipColumn].type.isEmpty())
+    {
+      row[newShipColumn].type = "";
+      row[newShipColumn].item->setBrush(Qt::black);
+      row[newShipColumn].item->setOpacity(0.1);
+      break;
+    }
+  }
 }
 
 void ShipGraphicsManager::reorderShips(const QString& name, int newInitiative)
