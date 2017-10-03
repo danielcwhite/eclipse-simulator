@@ -95,6 +95,8 @@ void EclipseMainWindow::setupBattleOrderView()
   for (auto& shipWidget : ships_)
   {
     connect(shipWidget, &ShipWidgetController::shipAdded, shipGraphics_, &ShipGraphicsManager::addShipRect);
+    connect(shipWidget, &ShipWidgetController::shipRemoved, shipGraphics_, &ShipGraphicsManager::removeShipRect);
+    connect(shipWidget, &ShipWidgetController::initiativeChanged, shipGraphics_, &ShipGraphicsManager::reorderShips);
   }
 
   //auto text = scene_->addText("I", QFont("Arial", 12) );
@@ -107,30 +109,91 @@ ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
   : QObject(parent), scene_(scene)
 {}
 
+namespace
+{
+  const int w = 20;
+  const int h = 30;
+  const int spacing = 10;
+  const int maxShipTypes = 7;
+  const int maxShips = 8;
+  const int border = 5;
+}
+
 void ShipGraphicsManager::addShipBorders()
 {
   QBrush blueBrush(Qt::blue);
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 
-  const int w = 20;
-  const int h = 30;
-  const int spacing = 10;
-  for (int i = 0; i < 8; ++i)
+  for (int i = 0; i < maxShips; ++i)
   {
-    rectItems_.push_back({});
-    for (int j = 0; j < 7; ++j)
+    for (int j = 0; j < maxShipTypes; ++j)
     {
-      auto rectangle = scene_->addRect(5 + i*(w + spacing), 5 + j*(h + spacing), w, h, outlinePen, Qt::black);
-      rectItems_[i].push_back(rectangle);
+      auto rectangle = scene_->addRect(border + i*(w + spacing), border + j*(h + spacing), w, h, outlinePen, Qt::black);
+      rectItems_[j][i].item = rectangle;
     }
   }
 }
 
+/*
+0 att int
+1 att cru
+2 att dre
+3 def int
+4 def cru
+5 def dre
+6 def stb
+*/
 
-void ShipGraphicsManager::addShipRect(const QString& name, bool attacker, int initiative)
+void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 {
-  qDebug() << __FUNCTION__ << name << attacker << initiative;
+  qDebug() << __FUNCTION__ << name << initiative;
+  auto desc = name.split(' ');
+  auto isAttacker = desc[0] == "Attacker";
+  auto shipType = desc[1];
+  auto color = isAttacker ? Qt::red : Qt::blue;
+  auto leftSide = isAttacker;
+
+  int firstShip = leftSide ? 0 : maxShips - 1;
+  int shipIndex = -1;
+  for (int j = 0; j < maxShipTypes; ++j)
+  {
+    if (rectItems_[j][firstShip].type == shipType)
+    {
+      qDebug() << "found ship type in grid";
+      shipIndex = j;
+      break;
+    }
+    else if (rectItems_[j][0].type.isEmpty() && rectItems_[j][maxShips - 1].type.isEmpty())
+    {
+      shipIndex = j;
+      qDebug() << "found empty type in grid";
+    }
+  }
+  qDebug() << "ship type not in grid yet";
+  auto& row = rectItems_[shipIndex];
+  for (int i = 0; i < maxShips; ++i)
+  {
+    auto newShipColumn = leftSide ? i : maxShips - i - 1;
+    if (row[newShipColumn].type.isEmpty())
+    {
+      row[newShipColumn].type = shipType;
+      row[newShipColumn].isAttacker = isAttacker;
+      row[newShipColumn].initiative = initiative;
+      row[newShipColumn].item->setBrush(color);
+      break;
+    }
+  }
+}
+
+void ShipGraphicsManager::removeShipRect(const QString& name)
+{
+  qDebug() << __FUNCTION__ << name;
+}
+
+void ShipGraphicsManager::reorderShips(const QString& name, int newInitiative)
+{
+  qDebug() << __FUNCTION__ << name << newInitiative;
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
@@ -162,7 +225,7 @@ void ShipWidgetController::addShipPressed()
       widgets_.add->setDisabled(true);
     }
     widgets_.remove->setEnabled(true);
-    Q_EMIT shipAdded(name_, true, 1);
+    Q_EMIT shipAdded(name_, spec_.initiative);
   }
 }
 
@@ -177,6 +240,7 @@ void ShipWidgetController::removeShipPressed()
       widgets_.remove->setDisabled(true);
     }
     widgets_.add->setEnabled(true);
+    Q_EMIT shipRemoved(name_);
   }
 }
 
@@ -190,10 +254,13 @@ void ShipWidgetController::editShipPressed()
 
 void ShipWidgetController::specAccepted()
 {
+  int oldInitiative = spec_.initiative;
   spec_ = editor_->spec();
-  qDebug() << "spec accepted:" << name_;
-  std::cout << '\t' << spec_ << std::endl;
+  //qDebug() << "spec accepted:" << name_;
+  //std::cout << '\t' << spec_ << std::endl;
   updateSpecLabel();
+  if (oldInitiative != spec_.initiative && widgets_.count->intValue() > 0)
+    Q_EMIT initiativeChanged(name_, spec_.initiative);
 }
 
 void ShipWidgetController::updateSpecLabel()

@@ -29,7 +29,7 @@ public Q_SLOTS:
 Q_SIGNALS:
   void shipAdded(const QString& name, int initiative);
   void shipRemoved(const QString& name);
-  void initiativeChanged(const QString& name, int initiative);
+  void initiativeChanged(const QString& name, int newInitiative);
 private:
   void updateSpecLabel();
   ShipWidgets widgets_;
@@ -48,9 +48,17 @@ public:
 public Q_SLOTS:
   void addShipRect(const QString& name, int initiative);
   void removeShipRect(const QString& name);
+  void reorderShips(const QString& name, int newInitiative);
 private:
   QGraphicsScene* scene_;
-  std::vector<std::vector<QGraphicsItem*>> rectItems_;
+  struct ShipRect
+  {
+    QGraphicsRectItem* item;
+    QString type;
+    bool isAttacker {false};
+    int initiative {0};
+  };
+  std::map<int, std::map<int, ShipRect>> rectItems_;
 };
 
 class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
