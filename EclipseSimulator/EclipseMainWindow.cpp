@@ -98,11 +98,6 @@ void EclipseMainWindow::setupBattleOrderView()
     connect(shipWidget, &ShipWidgetController::shipRemoved, shipGraphics_, &ShipGraphicsManager::removeShipRect);
     connect(shipWidget, &ShipWidgetController::initiativeChanged, shipGraphics_, &ShipGraphicsManager::reorderShips);
   }
-
-  //auto text = scene_->addText("I", QFont("Arial", 12) );
-  //text->setPos(7, 7);
-
-  //qDebug() << battleOrderGraphicsView_->mapToScene(battleOrderGraphicsView_->rect()).boundingRect();
 }
 
 ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
@@ -203,7 +198,6 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
   {
     if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
     {
-      //qDebug() << "found ship type in grid";
       shipIndex = j;
       break;
     }
@@ -228,6 +222,25 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
 void ShipGraphicsManager::reorderShips(const QString& name, int newInitiative)
 {
   qDebug() << __FUNCTION__ << name << newInitiative;
+  if (!name.isEmpty())
+  {
+    auto desc = name.split(' ');
+    auto isAttacker = desc[0] == "Attacker";
+    auto shipType = desc[1];
+    for (int j = 0; j < maxShipTypes; ++j)
+    {
+      for (int i = 0; i < maxShips; ++i)
+      {
+        auto& item = rectItems_[j][i];
+        if (item.type == shipType && item.isAttacker == isAttacker)
+          item.initiative = newInitiative;
+        if (!item.type.isEmpty())
+          std::cout << "(" << item.type.toStdString() << "," << item.isAttacker << ","
+            << item.initiative << ")" << item.item->pos().x() << "," << item.item->pos().y() << "\t";
+      }
+      std::cout << std::endl;
+    }
+  }
 }
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
