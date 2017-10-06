@@ -29,6 +29,12 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QGroupBox" name="groupBox_6">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="title">
           <string>Interceptor</string>
          </property>
@@ -67,14 +73,29 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="attackerInterceptorCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>0</width>
-              <height>0</height>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">background: red</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
             </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
@@ -124,6 +145,24 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="attackerCruiserCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: red</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>
@@ -172,6 +211,24 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="attackerDreadnoughtCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: red</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>
@@ -326,6 +383,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QGroupBox" name="groupBox_10">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="title">
           <string>Interceptor</string>
          </property>
@@ -364,6 +427,30 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="defenderInterceptorCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: blue</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>
@@ -412,6 +499,30 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="defenderCruiserCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: blue</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>
@@ -422,6 +533,18 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_11">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>999999</width>
+           <height>999999</height>
+          </size>
+         </property>
          <property name="title">
           <string>Dreadnought</string>
          </property>
@@ -460,6 +583,30 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="defenderDreadnoughtCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: blue</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>
@@ -508,6 +655,30 @@
           </item>
           <item>
            <widget class="QLCDNumber" name="defenderStarbaseCountLcdNumber_">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>45</width>
+              <height>51</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background: blue</string>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
             <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
             </property>

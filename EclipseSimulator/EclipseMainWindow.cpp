@@ -136,12 +136,26 @@ void ShipGraphicsManager::addShipBorders()
   }
 }
 
+Qt::BrushStyle getPattern(const QString& ship)
+{
+  if (ship == "Interceptor")
+    return Qt::SolidPattern;
+  if (ship == "Cruiser")
+    return Qt::Dense1Pattern;
+  if (ship == "Dreadnought")
+    return Qt::DiagCrossPattern;
+  if (ship == "Starbase")
+    return Qt::BDiagPattern;
+  return Qt::VerPattern;
+}
+
 void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 {
   auto desc = name.split(' ');
   auto isAttacker = desc[0] == "Attacker";
   auto shipType = desc[1];
   auto color = isAttacker ? Qt::red : Qt::blue;
+  auto pattern = getPattern(shipType);
   auto leftSide = isAttacker;
 
   int firstShip = leftSide ? 0 : maxShips - 1;
@@ -150,14 +164,14 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   {
     if (rectItems_[j][firstShip].type == shipType)
     {
-      qDebug() << "found ship type in grid";
+      //qDebug() << "found ship type in grid";
       shipIndex = j;
       break;
     }
     else if (rectItems_[j][0].type.isEmpty() && rectItems_[j][maxShips - 1].type.isEmpty())
     {
       shipIndex = j;
-      qDebug() << "found empty type in grid";
+      //qDebug() << "found empty type in grid";
       break;
     }
   }
@@ -171,7 +185,7 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
       row[newShipColumn].type = shipType;
       row[newShipColumn].isAttacker = isAttacker;
       row[newShipColumn].initiative = initiative;
-      row[newShipColumn].item->setBrush(color);
+      row[newShipColumn].item->setBrush(QBrush(color, pattern));
       row[newShipColumn].item->setOpacity(1);
       break;
     }
@@ -191,7 +205,7 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
   {
     if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
     {
-      qDebug() << "found ship type in grid";
+      //qDebug() << "found ship type in grid";
       shipIndex = j;
       break;
     }
@@ -206,6 +220,8 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
       row[newShipColumn].type = "";
       row[newShipColumn].item->setBrush(Qt::black);
       row[newShipColumn].item->setOpacity(0.1);
+      if (i == 0)
+        reorderShips("", 0);
       break;
     }
   }
