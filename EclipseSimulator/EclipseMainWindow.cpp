@@ -162,16 +162,14 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   int shipIndex = -1;
   for (int j = 0; j < maxShipTypes; ++j)
   {
-    if (rectItems_[j][firstShip].type == shipType)
+    if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
     {
-      //qDebug() << "found ship type in grid";
       shipIndex = j;
       break;
     }
     else if (rectItems_[j][0].type.isEmpty() && rectItems_[j][maxShips - 1].type.isEmpty())
     {
       shipIndex = j;
-      //qDebug() << "found empty type in grid";
       break;
     }
   }
