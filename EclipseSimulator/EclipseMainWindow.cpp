@@ -96,7 +96,7 @@ void EclipseMainWindow::setupBattleOrderView()
   {
     connect(shipWidget, &ShipWidgetController::shipAdded, shipGraphics_, &ShipGraphicsManager::addShipRect);
     connect(shipWidget, &ShipWidgetController::shipRemoved, shipGraphics_, &ShipGraphicsManager::removeShipRect);
-    connect(shipWidget, &ShipWidgetController::initiativeChanged, shipGraphics_, &ShipGraphicsManager::reorderShips);
+    connect(shipWidget, &ShipWidgetController::initiativeChanged, shipGraphics_, &ShipGraphicsManager::adjustInitiative);
   }
 }
 
@@ -125,6 +125,7 @@ void ShipGraphicsManager::addShipBorders()
     for (int j = 0; j < maxShipTypes; ++j)
     {
       auto rectangle = scene_->addRect(border + i*(w + spacing), border + j*(h + spacing), w, h, outlinePen, Qt::black);
+      //qDebug() << rectangle->boundingRect().topLeft();
       rectItems_[j][i].item = rectangle;
       rectangle->setOpacity(0.1);
     }
@@ -180,6 +181,8 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
       row[newShipColumn].initiative = initiative;
       row[newShipColumn].item->setBrush(QBrush(color, pattern));
       row[newShipColumn].item->setOpacity(1);
+      if (newShipColumn == firstShip)
+        reorderShips();
       break;
     }
   }
@@ -213,15 +216,14 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
       row[newShipColumn].item->setBrush(Qt::black);
       row[newShipColumn].item->setOpacity(0.1);
       if (i == 0)
-        reorderShips("", 0);
+        reorderShips();
       break;
     }
   }
 }
 
-void ShipGraphicsManager::reorderShips(const QString& name, int newInitiative)
+void ShipGraphicsManager::adjustInitiative(const QString& name, int newInitiative)
 {
-  qDebug() << __FUNCTION__ << name << newInitiative;
   if (!name.isEmpty())
   {
     auto desc = name.split(' ');
@@ -234,14 +236,67 @@ void ShipGraphicsManager::reorderShips(const QString& name, int newInitiative)
         auto& item = rectItems_[j][i];
         if (item.type == shipType && item.isAttacker == isAttacker)
           item.initiative = newInitiative;
-        if (!item.type.isEmpty())
-          std::cout << "(" << item.type.toStdString() << "," << item.isAttacker << ","
-            << item.initiative << ")" << item.item->pos().x() << "," << item.item->pos().y() << "\t";
       }
-      std::cout << std::endl;
     }
   }
+  reorderShips();
 }
+
+using BattleOrderTuple = std::tuple<int,bool,int>;
+
+void ShipGraphicsManager::reorderShips()
+{
+  std::vector<BattleOrderTuple> battleOrder;
+  for (int j = 0; j < maxShipTypes; ++j)
+  {
+
+      auto& itemLeft = rectItems_[j][0];
+      if (!itemLeft.type.isEmpty())
+      {
+        battleOrder.emplace_back(itemLeft.initiative, itemLeft.isAttacker, j);
+        auto pos = itemLeft.item->boundingRect().topLeft();
+         std::cout << j << " (" << itemLeft.type.toStdString() << "," << itemLeft.isAttacker << ","
+           << itemLeft.initiative << ") " << pos.x() << "," << pos.y() << std::endl;
+      }
+      auto& itemRight = rectItems_[j][maxShips - 1];
+      if (!itemRight.type.isEmpty())
+      {
+        battleOrder.emplace_back(itemRight.initiative, itemRight.isAttacker, j);
+        auto pos = itemRight.item->boundingRect().topLeft();
+         std::cout << j << " (" << itemRight.type.toStdString() << "," << itemRight.isAttacker << ","
+           << itemRight.initiative << ") " << pos.x() << "," << pos.y() << std::endl;
+      }
+
+//    std::cout << std::endl;
+  }
+  std::cout << "ship infos:" << std::endl;
+  for (const auto& t : battleOrder)
+  {
+    int init;
+    bool atk;
+    int type;
+    std::tie(init, atk, type) = t;
+    std::cout << init << ", " << atk << ", " << type << std::endl;
+  }
+  std::sort(battleOrder.begin(), battleOrder.end(), [](const BattleOrderTuple& lhs, const BattleOrderTuple& rhs)
+    {
+      if (std::get<0>(lhs) > std::get<0>(rhs))
+        return true;
+      if (std::get<0>(lhs) == std::get<0>(rhs) && std::get<1>(lhs) < std::get<1>(rhs))
+        return true;
+      return false;
+    });
+  std::cout << "sorted battle order ship infos:" << std::endl;
+  for (const auto& t : battleOrder)
+  {
+    int init;
+    bool atk;
+    int type;
+    std::tie(init, atk, type) = t;
+    std::cout << init << ", " << atk << ", " << type << std::endl;
+  }
+}
+
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
   int maxShips, QWidget* parent) : QObject(parent), widgets_(widgets), name_(name),

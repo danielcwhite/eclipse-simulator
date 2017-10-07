@@ -48,7 +48,8 @@ public:
 public Q_SLOTS:
   void addShipRect(const QString& name, int initiative);
   void removeShipRect(const QString& name);
-  void reorderShips(const QString& name, int newInitiative);
+  void adjustInitiative(const QString& name, int newInitiative);
+  void reorderShips();
 private:
   QGraphicsScene* scene_;
   struct ShipRect
