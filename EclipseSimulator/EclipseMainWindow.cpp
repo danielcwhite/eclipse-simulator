@@ -1,6 +1,8 @@
 #include <EclipseMainWindow.hpp>
+#include <Simulation.hpp>
 #include <QDebug>
 #include <QGraphicsItem>
+#include <QtWidgets>
 
 EclipseMainWindow::EclipseMainWindow()
 {
@@ -92,7 +94,7 @@ EclipseMainWindow::EclipseMainWindow()
 
 void EclipseMainWindow::startBattle()
 {
-  qDebug() << __FUNCTION__;
+  log(__FUNCTION__);
   startPushButton_->setEnabled(false);
   nextPushButton_->setEnabled(true);
   finishPushButton_->setEnabled(true);
@@ -100,7 +102,8 @@ void EclipseMainWindow::startBattle()
 
 void EclipseMainWindow::incrementBattle()
 {
-  qDebug() << __FUNCTION__;
+  auto r = Simulation::roll();
+  log(toString(r));
   //startPushButton_->setEnabled(false);
   //nextPushButton_->setEnabled(true);
   //finishPushButton_->setEnabled(true);
@@ -108,10 +111,19 @@ void EclipseMainWindow::incrementBattle()
 
 void EclipseMainWindow::finishBattle()
 {
-  qDebug() << __FUNCTION__;
+  log(__FUNCTION__);
   startPushButton_->setEnabled(true);
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
+}
+
+void EclipseMainWindow::log(const QString& str)
+{
+  auto current = battleResultsTextEdit_->toPlainText();
+  if (!current.isEmpty())
+    current += "\n";
+  battleResultsTextEdit_->setText(current + str);
+  battleResultsTextEdit_->verticalScrollBar()->setValue(battleResultsTextEdit_->verticalScrollBar()->maximum());
 }
 
 void EclipseMainWindow::setupBattleOrderView()

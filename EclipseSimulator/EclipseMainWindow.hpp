@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <ShipSpec.hpp>
+#include <sstream>
 #include "ui_EclipseSimulatorMainWindow.h"
 #include "ui_ShipSpecEditor.h"
 
@@ -105,11 +106,19 @@ private Q_SLOTS:
 
 private:
   void setupBattleOrderView();
+  void log(const QString& str);
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
   ShipGraphicsManager* shipGraphics_;
 };
 
+template <class T>
+QString toString(const T& t)
+{
+  std::ostringstream o;
+  o << t;
+  return QString::fromStdString(o.str());
+}
 
 #endif

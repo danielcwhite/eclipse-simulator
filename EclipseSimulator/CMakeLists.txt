@@ -46,6 +46,7 @@ SET(EclipseSimulatorGUI_SOURCES
 SET(EclipseSimulatorGUI_HEADERS
   EclipseMainWindow.hpp
   ShipSpec.hpp
+  Simulation.hpp
 )
 
 SET(EclipseSimulatorGUI_FORMS
