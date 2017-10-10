@@ -149,7 +149,6 @@ Qt::BrushStyle getPattern(const QString& ship)
 
 void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 {
-  //QBrush blueBrush(Qt::blue);
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 
@@ -187,12 +186,7 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   int shipIndex = -1;
   for (int j = 0; j < maxShipTypes; ++j)
   {
-    if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
-    {
-      shipIndex = j;
-      break;
-    }
-    else if (rectItems_[j][0].type.isEmpty() && rectItems_[j][maxShips - 1].type.isEmpty())
+    if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
     {
       shipIndex = j;
       break;
@@ -226,7 +220,7 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
   int shipIndex = -1;
   for (int j = 0; j < maxShipTypes; ++j)
   {
-    if (rectItems_[j][firstShip].type == shipType && rectItems_[j][firstShip].isAttacker == isAttacker)
+    if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
     {
       shipIndex = j;
       break;
