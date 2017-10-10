@@ -22,6 +22,10 @@ class ShipWidgetController : public QObject
 public:
   ShipWidgetController(ShipWidgets widgets, const QString& name, int maxShips, QWidget* parent = nullptr);
   QString name() const { return name_; }
+
+  const ShipSpec& spec() const { return spec_; }
+  bool isAttacker() const { return name().split(' ')[0] == "Attacker"; }
+  int activeCount() const { return widgets_.count->value(); }
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();
@@ -99,6 +103,13 @@ class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
 public:
   EclipseMainWindow();
 
+  struct Appender
+  {
+    EclipseMainWindow* window;
+  };
+  friend class Appender;
+  void append(const QString& str);
+
 private Q_SLOTS:
   void startBattle();
   void incrementBattle();
@@ -108,9 +119,12 @@ private:
   void setupBattleOrderView();
   void log(const QString& str);
 
+  Appender& getAppender() { return appender; }
+
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
   ShipGraphicsManager* shipGraphics_;
+  Appender appender;
 };
 
 template <class T>
@@ -119,6 +133,13 @@ QString toString(const T& t)
   std::ostringstream o;
   o << t;
   return QString::fromStdString(o.str());
+}
+
+template <class T>
+EclipseMainWindow::Appender& operator<<(EclipseMainWindow::Appender& a, const T& t)
+{
+  a.window->append(toString(t));
+  return a;
 }
 
 #endif

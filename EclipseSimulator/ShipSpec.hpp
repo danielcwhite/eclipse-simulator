@@ -5,15 +5,17 @@
 
 struct ShipSpec
 {
-  int hull {0};
-  int shield {0};
-  int computer {0};
-  int yellowGuns {0};
-  int orangeGuns {0};
-  int redGuns {0};
-  int initiative {0};
+  ShipSpec() : hull(0), shield(0), computer(0), yellowGuns(0), orangeGuns(0), redGuns(0), initiative(0) {}
+  ShipSpec(int h, int s, int c, int y, int o, int r, int i) :
+    hull(h), shield(s), computer(c), yellowGuns(y), orangeGuns(o), redGuns(r), initiative(i) {}
+  int hull;
+  int shield;
+  int computer;
+  int yellowGuns;
+  int orangeGuns;
+  int redGuns;
+  int initiative;
 };
-
 
 inline std::ostream& operator<<(std::ostream& o, const ShipSpec& ship)
 {
@@ -25,7 +27,5 @@ inline std::ostream& operator<<(std::ostream& o, const ShipSpec& ship)
     << "d2," << ship.redGuns
     << "d4,i" << ship.initiative << ")";
 }
-
-
 
 #endif

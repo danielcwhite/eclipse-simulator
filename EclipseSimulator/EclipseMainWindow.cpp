@@ -1,8 +1,15 @@
 #include <EclipseMainWindow.hpp>
-#include <Simulation.hpp>
+
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QtWidgets>
+
+std::ostream& print()
+{
+  return std::cout;
+}
+
+#include <Simulation.hpp>
 
 EclipseMainWindow::EclipseMainWindow()
 {
@@ -94,10 +101,23 @@ EclipseMainWindow::EclipseMainWindow()
 
 void EclipseMainWindow::startBattle()
 {
-  log(__FUNCTION__);
   startPushButton_->setEnabled(false);
   nextPushButton_->setEnabled(true);
   finishPushButton_->setEnabled(true);
+
+  using namespace Simulation;
+
+  AttackingFleet player { { "player" }, {} };
+  DefendingFleet ancient { { "ancients" }, {}};
+  for (const auto& ship : ships_)
+  {
+    if (ship->isAttacker())
+      player.addNewShip(ship->spec(), ship->activeCount());
+    else
+      ancient.addNewShip(ship->spec(), ship->activeCount());
+  }
+
+  simulateBattle(player, ancient, numTrialsSpinBox_->value());
 }
 
 void EclipseMainWindow::incrementBattle()
@@ -115,6 +135,13 @@ void EclipseMainWindow::finishBattle()
   startPushButton_->setEnabled(true);
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
+}
+
+void EclipseMainWindow::append(const QString& str)
+{
+  auto current = battleResultsTextEdit_->toPlainText();
+  battleResultsTextEdit_->setText(current + str);
+  battleResultsTextEdit_->verticalScrollBar()->setValue(battleResultsTextEdit_->verticalScrollBar()->maximum());
 }
 
 void EclipseMainWindow::log(const QString& str)
