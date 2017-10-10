@@ -126,8 +126,8 @@ void ShipGraphicsManager::addShipBorders()
   {
     for (int j = 0; j < maxShipTypes; ++j)
     {
-      auto rectangle = scene_->addRect(border + i*(w + spacing), border + j*(h + spacing), w, h, outlinePen, Qt::black);
-      //qDebug() << rectangle->boundingRect().topLeft();
+      auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
+      rectangle->setPos(border + i*(w + spacing), border + j*(h + spacing));
       rectItems_[j][i].item = rectangle;
       rectangle->setOpacity(0.1);
     }
@@ -163,7 +163,8 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto pattern = getPattern(shipType);
     auto leftSide = isAttacker;
 
-    auto rectangle = scene_->addRect(leftSide ? -30 : 250, 5 + 40*i, w, h, outlinePen, QBrush(color, pattern));
+    auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, QBrush(color, pattern));
+    rectangle->setPos(leftSide ? -30 : 250, 5 + 40*i);
 
     ShipRect r(rectangle, shipType, isAttacker, 0);
 
@@ -275,14 +276,14 @@ void ShipGraphicsManager::adjustInitiative(const QString& name, int newInitiativ
 
 void ShipGraphicsManager::reorderShips()
 {
-  qDebug() << __FUNCTION__;
+  //qDebug() << __FUNCTION__;
   std::sort(descriptionRects_.begin(), descriptionRects_.end());
   auto i = 0;
   for (auto& desc : descriptionRects_)
   {
     int newY = i*40 + 4;
-    auto oldY = desc.item->boundingRect().topLeft().y();
-    qDebug() << (desc.isAttacker ? "A-" : "D-") << desc.type << oldY << newY;
+    auto oldY = desc.item->pos().y();
+    //qDebug() << (desc.isAttacker ? "A-" : "D-") << desc.type << oldY << newY;
     desc.item->moveBy(0, newY - oldY);
     ++i;
   }
