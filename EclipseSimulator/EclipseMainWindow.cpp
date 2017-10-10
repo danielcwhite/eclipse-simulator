@@ -81,6 +81,37 @@ EclipseMainWindow::EclipseMainWindow()
   };
 
   setupBattleOrderView();
+
+  connect(startPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::startBattle);
+  connect(nextPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::incrementBattle);
+  connect(finishPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::finishBattle);
+
+  nextPushButton_->setEnabled(false);
+  finishPushButton_->setEnabled(false);
+}
+
+void EclipseMainWindow::startBattle()
+{
+  qDebug() << __FUNCTION__;
+  startPushButton_->setEnabled(false);
+  nextPushButton_->setEnabled(true);
+  finishPushButton_->setEnabled(true);
+}
+
+void EclipseMainWindow::incrementBattle()
+{
+  qDebug() << __FUNCTION__;
+  //startPushButton_->setEnabled(false);
+  //nextPushButton_->setEnabled(true);
+  //finishPushButton_->setEnabled(true);
+}
+
+void EclipseMainWindow::finishBattle()
+{
+  qDebug() << __FUNCTION__;
+  startPushButton_->setEnabled(true);
+  nextPushButton_->setEnabled(false);
+  finishPushButton_->setEnabled(false);
 }
 
 void EclipseMainWindow::setupBattleOrderView()

@@ -98,6 +98,11 @@ class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
 public:
   EclipseMainWindow();
 
+private Q_SLOTS:
+  void startBattle();
+  void incrementBattle();
+  void finishBattle();
+
 private:
   void setupBattleOrderView();
 
