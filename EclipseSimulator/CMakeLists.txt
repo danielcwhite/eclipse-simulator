@@ -40,13 +40,19 @@ INCLUDE_DIRECTORIES(
 SET(EclipseSimulatorGUI_SOURCES
   EclipseMainWindow.cpp
   Main.cpp
-#  ShipEditor.cpp
+  ShipGraphicsManager.cpp
+  ShipSpecEditorDialog.cpp
+  ShipWidgetController.cpp
+  Simulation.cpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS
   EclipseMainWindow.hpp
   ShipSpec.hpp
   Simulation.hpp
+  ShipGraphicsManager.hpp
+  ShipSpecEditorDialog.hpp
+  ShipWidgetController.hpp
 )
 
 SET(EclipseSimulatorGUI_FORMS
@@ -73,7 +79,5 @@ add_executable(EclipseSimulatorGUI
 qt5_use_modules(EclipseSimulatorGUI Widgets)
 
 TARGET_LINK_LIBRARIES(EclipseSimulatorGUI
-#  ${NonPythonInterface_ApplicationLinkLibraries}
-#  Core_Python
   ${QT_LIBRARIES}
 )
