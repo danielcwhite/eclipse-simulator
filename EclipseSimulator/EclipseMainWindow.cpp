@@ -114,13 +114,14 @@ void EclipseMainWindow::startBattle()
       ancient.addNewShip(ship->spec(), ship->activeCount());
   }
 
-  simulateBattle(player, ancient, numTrialsSpinBox_->value());
+  BattleHelper bh;
+  bh.simulateBattle(player, ancient, numTrialsSpinBox_->value());
 }
 
 void EclipseMainWindow::incrementBattle()
 {
-  auto r = Simulation::roll();
-  log(toString(r));
+  //auto r = Simulation::roll();
+  //log(toString(r));
   //startPushButton_->setEnabled(false);
   //nextPushButton_->setEnabled(true);
   //finishPushButton_->setEnabled(true);

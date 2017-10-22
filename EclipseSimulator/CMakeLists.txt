@@ -47,9 +47,12 @@ SET(EclipseSimulatorGUI_SOURCES
 )
 
 SET(EclipseSimulatorGUI_HEADERS
-  EclipseMainWindow.hpp
   ShipSpec.hpp
   Simulation.hpp
+)
+
+SET(EclipseSimulatorGUI_HEADERS_TO_MOC
+  EclipseMainWindow.hpp
   ShipGraphicsManager.hpp
   ShipSpecEditorDialog.hpp
   ShipWidgetController.hpp
@@ -65,12 +68,13 @@ SET(EclipseSimulatorGUI_FORMS
 #)
 
 QT5_WRAP_UI(EclipseSimulatorGUI_FORMS_HEADERS ${EclipseSimulatorGUI_FORMS})
-QT5_WRAP_CPP(EclipseSimulatorGUI_HEADERS_MOC ${EclipseSimulatorGUI_HEADERS})
+QT5_WRAP_CPP(EclipseSimulatorGUI_HEADERS_MOC ${EclipseSimulatorGUI_HEADERS_TO_MOC})
 #QT5_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
 
 add_executable(EclipseSimulatorGUI
   ${EclipseSimulatorGUI_SOURCES}
   ${EclipseSimulatorGUI_HEADERS}
+  ${EclipseSimulatorGUI_HEADERS_TO_MOC}
   ${EclipseSimulatorGUI_HEADERS_MOC}
   ${EclipseSimulatorGUI_FORMS_HEADERS}
   #${Interface_Application_RESOURCES_RCC}

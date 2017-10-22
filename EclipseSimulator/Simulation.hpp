@@ -14,13 +14,6 @@
 namespace Simulation
 {
 
-int roll()
-{
-  static std::random_device rd;  //Will be used to obtain a seed for the random number engine
-  static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-  static std::uniform_int_distribution<> dis(1, 6);
-  return dis(gen);
-}
 
 template <typename T>
 using Roll = std::vector<T>;
@@ -58,50 +51,6 @@ std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
   return o;
 }
 
-OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
-{
-  OneGunRoll gunRoll;
-  for (int i = 0; i < ship.*gun; ++i)
-    gunRoll.push_back(roll());
-  return gunRoll;
-}
-
-AttackRoll attack(const ShipSpec& ship)
-{
-  return {
-    rollGuns(ship, &ShipSpec::yellowGuns),
-    rollGuns(ship, &ShipSpec::orangeGuns),
-    rollGuns(ship, &ShipSpec::redGuns)
-  };
-}
-
-std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield)
-{
-  return [=](const OneGunRoll& roll)
-  {
-    HitResult result;
-    for (auto die : roll)
-    {
-      if (1 == die)
-        result.push_back(false);
-      else if (6 == die)
-        result.push_back(true);
-      else
-        result.push_back(die + computer - shield >= 6);
-    }
-    return result;
-  };
-}
-
-ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target)
-{
-  auto attackFunc = resultOfAttackPart(shooter.computer, target.shield);
-  return {
-    attackFunc(roll.yellowDice),
-    attackFunc(roll.orangeDice),
-    attackFunc(roll.redDice)
-  };
-}
 struct Ship
 {
   explicit Ship(const ShipSpec& s) :
@@ -122,7 +71,7 @@ struct AttackOrder
   }
 };
 
-bool operator<(const Ship& a, const Ship& b)
+inline bool operator<(const Ship& a, const Ship& b)
 {
   return AttackOrder()(a, b);
 }
@@ -158,13 +107,13 @@ struct Defender : FightingShip
   explicit Defender(const ShipSpec& ship) : FightingShip(ship, false) {}
 };
 
-std::ostream& operator<<(std::ostream& o, const Ship& ship)
+inline std::ostream& operator<<(std::ostream& o, const Ship& ship)
 {
   return o << ship.spec << " : " << ship.hitPoints << "/"
     << (ship.spec.hull+1) << " hp";
 }
 
-std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
+inline std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
 {
   return o << std::get<0>(fs) << " " << (std::get<1>(fs) ? "atk " : "def ") << &fs;
 }
@@ -208,6 +157,16 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
   return o;
 }
 
+class BattleHelper
+{
+public:
+  int roll();
+  OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
+  AttackRoll attack(const ShipSpec& ship);
+  std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
+  ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
+  void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
+};
 
 class DamageApplier
 {
@@ -233,7 +192,6 @@ private:
   bool battleComplete();
 };
 
-void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
 
 }
 #endif

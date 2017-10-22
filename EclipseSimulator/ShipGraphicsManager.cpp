@@ -156,7 +156,7 @@ void ShipGraphicsManager::addShipBorders()
     for (int j = 0; j < maxShips; ++j)
     {
       auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
-      rectangle->setPos(border + i*(w + spacing), border + j*(h + spacing));
+      rectangle->setPos(border + j*(w + spacing), border + i*(h + spacing));
       rectItems_[name][j].item = rectangle;
       rectangle->setOpacity(0.1);
     }
