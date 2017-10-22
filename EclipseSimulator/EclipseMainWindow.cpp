@@ -161,7 +161,10 @@ void EclipseMainWindow::setupBattleOrderView()
   std::vector<QString> shipNames;
   std::transform(ships_.begin(), ships_.end(), std::back_inserter(shipNames), [](ShipWidgetController* swc) { return swc->name(); });
   shipGraphics_->addShipDescriptions(shipNames);
-  shipGraphics_->addShipBorders();
+  std::map<QString, int> maxShips;
+  std::transform(ships_.begin(), ships_.end(), std::inserter(maxShips, maxShips.end()),
+    [](ShipWidgetController* swc) { return std::make_pair(swc->name(), swc->maximum()); });
+  shipGraphics_->addShipBorders(maxShips);
   shipGraphics_->reorderShips();
 
   for (auto& shipWidget : ships_)

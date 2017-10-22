@@ -10,7 +10,7 @@ class ShipGraphicsManager : public QObject
   Q_OBJECT
 public:
   explicit ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent = nullptr);
-  void addShipBorders();
+  void addShipBorders(const std::map<QString, int>& maxShips);
   void addShipDescriptions(const std::vector<QString>& names);
 public Q_SLOTS:
   void addShipRect(const QString& name, int initiative);

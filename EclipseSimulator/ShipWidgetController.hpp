@@ -20,7 +20,7 @@ class ShipWidgetController : public QObject
 public:
   ShipWidgetController(ShipWidgets widgets, const QString& name, int maxShips, QWidget* parent = nullptr);
   QString name() const { return name_; }
-
+  int maximum() const { return maxShips_; }
   const ShipSpec& spec() const { return spec_; }
   bool isAttacker() const { return name().split(' ')[0] == "Attacker"; }
   int activeCount() const { return widgets_.count->value(); }

@@ -6,7 +6,6 @@ namespace
   const int h = 30;
   const int spacing = 10;
   const int maxShipTypes = 7;
-  const int maxShips = 8;
   const int border = 5;
 }
 
@@ -36,21 +35,10 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   auto pattern = getPattern(shipType);
   auto leftSide = isAttacker;
 
-  // int firstShip = leftSide ? 0 : maxShips - 1;
-  // int shipIndex = -1;
-  // for (int j = 0; j < maxShipTypes; ++j)
-  // {
-  //   if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
-  //   {
-  //     shipIndex = j;
-  //     break;
-  //   }
-  // }
-
   auto& row = rectItems_[name];
-  for (int i = 0; i < maxShips; ++i)
+  for (int i = 0; i < row.size(); ++i)
   {
-    auto newShipColumn = leftSide ? i : maxShips - i - 1;
+    auto newShipColumn = leftSide ? i : row.size() - i - 1;
     if (row[newShipColumn].type.isEmpty())
     {
       row[newShipColumn].type = shipType;
@@ -67,24 +55,12 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
 {
   auto desc = name.split(' ');
   auto isAttacker = desc[0] == "Attacker";
-  // auto shipType = desc[1];
   auto leftSide = isAttacker;
-  //
-  // int firstShip = leftSide ? 0 : maxShips - 1;
-  // int shipIndex = -1;
-  // for (int j = 0; j < maxShipTypes; ++j)
-  // {
-  //   if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
-  //   {
-  //     shipIndex = j;
-  //     break;
-  //   }
-  // }
 
   auto& row = rectItems_[name];
-  for (int i = maxShips - 1; i >= 0; --i)
+  for (int i = row.size() - 1; i >= 0; --i)
   {
-    auto newShipColumn = leftSide ? i : maxShips - i - 1;
+    auto newShipColumn = leftSide ? i : row.size() - i - 1;
     if (!row[newShipColumn].type.isEmpty())
     {
       row[newShipColumn].type = "";
@@ -104,15 +80,15 @@ void ShipGraphicsManager::adjustInitiative(const QString& name, int newInitiativ
     auto desc = name.split(' ');
     auto isAttacker = desc[0] == "Attacker";
     auto shipType = desc[1];
-    for (const auto& n : names_)
+
+    auto& row = rectItems_[name];
+    for (int i = 0; i < row.size(); ++i)
     {
-      for (int i = 0; i < maxShips; ++i)
-      {
-        auto& item = rectItems_[n][i];
-        if (item.type == shipType && item.isAttacker == isAttacker)
-          item.initiative = newInitiative;
-      }
+      auto& item = row[i];
+      if (item.type == shipType && item.isAttacker == isAttacker)
+        item.initiative = newInitiative;
     }
+
     for (auto& desc : descriptionRects_)
     {
       if (desc.type == shipType && desc.isAttacker == isAttacker)
@@ -132,7 +108,7 @@ void ShipGraphicsManager::reorderShips()
     auto oldY = desc.item->pos().y();
     desc.item->moveBy(0, newY - oldY);
     auto& row = rectItems_[desc.name];
-    for (int j = 0; j < maxShips; ++j)
+    for (int j = 0; j < row.size(); ++j)
     {
       auto oldY = row[j].item->pos().y();
       row[j].item->moveBy(0, newY - oldY);
@@ -141,7 +117,7 @@ void ShipGraphicsManager::reorderShips()
   }
 }
 
-void ShipGraphicsManager::addShipBorders()
+void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 {
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
@@ -149,11 +125,23 @@ void ShipGraphicsManager::addShipBorders()
   auto i = 0;
   for (const auto& name : names_)
   {
-    rectItems_[name].resize(maxShips);
-    for (int j = 0; j < maxShips; ++j)
+    auto desc = name.split(' ');
+    auto isAttacker = desc[0] == "Attacker";
+    auto leftSide = isAttacker;
+
+    auto maxIter = maxShips.find(name);
+    if (maxIter == maxShips.end())
+    {
+      qDebug() << "END";
+      return;
+    }
+    auto max = maxIter->second;
+    rectItems_[name].resize(max);
+    for (int j = 0; j < max; ++j)
     {
       auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
-      rectangle->setPos(border + j*(w + spacing), border + i*(h + spacing));
+      auto horizontal = leftSide ? j : (7 - j);
+      rectangle->setPos(border + horizontal*(w + spacing), border + i*(h + spacing));
       rectItems_[name][j].item = rectangle;
       rectItems_[name][j].name = name;
       rectangle->setOpacity(0.1);
