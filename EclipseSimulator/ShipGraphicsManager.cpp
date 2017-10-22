@@ -131,17 +131,14 @@ void ShipGraphicsManager::reorderShips()
     int newY = i*40 + 4;
     auto oldY = desc.item->pos().y();
     desc.item->moveBy(0, newY - oldY);
+    auto& row = rectItems_[desc.name];
+    for (int j = 0; j < maxShips; ++j)
+    {
+      auto oldY = row[j].item->pos().y();
+      row[j].item->moveBy(0, newY - oldY);
+    }
     ++i;
   }
-  // for (int j = 0; j < maxShipTypes; ++j)
-  // {
-  //   for (int i = 0; i < maxShips; ++i)
-  //   {
-  //     auto& item = rectItems_[j][i];
-  //     if (item.type == shipType && item.isAttacker == isAttacker)
-  //       item.initiative = newInitiative;
-  //   }
-  // }
 }
 
 void ShipGraphicsManager::addShipBorders()
@@ -158,6 +155,7 @@ void ShipGraphicsManager::addShipBorders()
       auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
       rectangle->setPos(border + j*(w + spacing), border + i*(h + spacing));
       rectItems_[name][j].item = rectangle;
+      rectItems_[name][j].name = name;
       rectangle->setOpacity(0.1);
     }
     ++i;
@@ -183,10 +181,9 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, QBrush(color, pattern));
     rectangle->setPos(leftSide ? -30 : 250, 5 + 40*i);
 
-    ShipRect r(rectangle, shipType, isAttacker, 0);
+    ShipRect r(rectangle, name, shipType, isAttacker, 0);
 
     descriptionRects_.push_back(r);
     i++;
   }
-  reorderShips();
 }

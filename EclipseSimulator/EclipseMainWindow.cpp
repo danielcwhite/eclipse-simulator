@@ -162,6 +162,7 @@ void EclipseMainWindow::setupBattleOrderView()
   std::transform(ships_.begin(), ships_.end(), std::back_inserter(shipNames), [](ShipWidgetController* swc) { return swc->name(); });
   shipGraphics_->addShipDescriptions(shipNames);
   shipGraphics_->addShipBorders();
+  shipGraphics_->reorderShips();
 
   for (auto& shipWidget : ships_)
   {

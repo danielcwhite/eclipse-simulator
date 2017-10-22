@@ -22,11 +22,11 @@ private:
   struct ShipRect
   {
     ShipRect() {}
-    ShipRect(QGraphicsRectItem* i, const QString& t, bool a, int o) :
-      item(i), type(t), isAttacker(a), initiative(o) {}
+    ShipRect(QGraphicsRectItem* i, const QString& n, const QString& t, bool a, int o) :
+      item(i), name(n), type(t), isAttacker(a), initiative(o) {}
 
     QGraphicsRectItem* item;
-    QString type;
+    QString name, type;
     bool isAttacker {false};
     int initiative {0};
 
@@ -39,7 +39,7 @@ private:
       return false;
     }
   };
-  
+
   std::vector<QString> names_;
   std::map<QString, std::vector<ShipRect>> rectItems_;
   std::vector<ShipRect> descriptionRects_;
