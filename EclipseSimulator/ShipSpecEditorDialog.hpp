@@ -2,6 +2,7 @@
 #define INTERFACE_APPLICATION_SHIPSPECEDITORDIALOG_H
 
 #include "ui_ShipSpecEditor.h"
+#include <ShipSpec.hpp>
 #include <QDialog>
 
 class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor

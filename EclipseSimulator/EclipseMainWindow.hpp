@@ -7,15 +7,6 @@
 #include "ui_EclipseSimulatorMainWindow.h"
 #include "ui_ShipSpecEditor.h"
 
-struct ShipWidgets
-{
-  QLabel* description;
-  QPushButton* edit;
-  QToolButton* add;
-  QToolButton* remove;
-  QLCDNumber* count;
-};
-
 class ShipWidgetController;
 class ShipGraphicsManager;
 

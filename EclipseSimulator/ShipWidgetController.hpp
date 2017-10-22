@@ -2,6 +2,17 @@
 #define INTERFACE_APPLICATION_SHIPWIDGETCONTROLLER_H
 
 #include <QObject>
+#include <QtWidgets>
+#include <ShipSpec.hpp>
+
+struct ShipWidgets
+{
+  QLabel* description;
+  QPushButton* edit;
+  QToolButton* add;
+  QToolButton* remove;
+  QLCDNumber* count;
+};
 
 class ShipWidgetController : public QObject
 {

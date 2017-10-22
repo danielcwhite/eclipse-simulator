@@ -1,3 +1,4 @@
+#include <ShipSpecEditorDialog.hpp>
 
 ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent) : QDialog(parent)
 {

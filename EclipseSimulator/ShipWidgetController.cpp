@@ -1,3 +1,6 @@
+#include <ShipWidgetController.hpp>
+#include <ShipSpecEditorDialog.hpp>
+#include <QDebug>
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
   int maxShips, QWidget* parent) : QObject(parent), widgets_(widgets), name_(name),

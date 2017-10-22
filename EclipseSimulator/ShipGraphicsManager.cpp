@@ -14,6 +14,19 @@ ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
   : QObject(parent), scene_(scene)
 {}
 
+Qt::BrushStyle getPattern(const QString& ship)
+{
+  if (ship == "Interceptor")
+    return Qt::SolidPattern;
+  if (ship == "Cruiser")
+    return Qt::Dense1Pattern;
+  if (ship == "Dreadnought")
+    return Qt::DiagCrossPattern;
+  if (ship == "Starbase")
+    return Qt::BDiagPattern;
+  return Qt::VerPattern;
+}
+
 void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 {
   auto desc = name.split(' ');
@@ -23,18 +36,18 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   auto pattern = getPattern(shipType);
   auto leftSide = isAttacker;
 
-  int firstShip = leftSide ? 0 : maxShips - 1;
-  int shipIndex = -1;
-  for (int j = 0; j < maxShipTypes; ++j)
-  {
-    if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
-    {
-      shipIndex = j;
-      break;
-    }
-  }
+  // int firstShip = leftSide ? 0 : maxShips - 1;
+  // int shipIndex = -1;
+  // for (int j = 0; j < maxShipTypes; ++j)
+  // {
+  //   if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
+  //   {
+  //     shipIndex = j;
+  //     break;
+  //   }
+  // }
 
-  auto& row = rectItems_[shipIndex];
+  auto& row = rectItems_[name];
   for (int i = 0; i < maxShips; ++i)
   {
     auto newShipColumn = leftSide ? i : maxShips - i - 1;
@@ -54,21 +67,21 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
 {
   auto desc = name.split(' ');
   auto isAttacker = desc[0] == "Attacker";
-  auto shipType = desc[1];
+  // auto shipType = desc[1];
   auto leftSide = isAttacker;
+  //
+  // int firstShip = leftSide ? 0 : maxShips - 1;
+  // int shipIndex = -1;
+  // for (int j = 0; j < maxShipTypes; ++j)
+  // {
+  //   if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
+  //   {
+  //     shipIndex = j;
+  //     break;
+  //   }
+  // }
 
-  int firstShip = leftSide ? 0 : maxShips - 1;
-  int shipIndex = -1;
-  for (int j = 0; j < maxShipTypes; ++j)
-  {
-    if (descriptionRects_[j].type == shipType && descriptionRects_[j].isAttacker == isAttacker)
-    {
-      shipIndex = j;
-      break;
-    }
-  }
-
-  auto& row = rectItems_[shipIndex];
+  auto& row = rectItems_[name];
   for (int i = maxShips - 1; i >= 0; --i)
   {
     auto newShipColumn = leftSide ? i : maxShips - i - 1;
@@ -91,11 +104,11 @@ void ShipGraphicsManager::adjustInitiative(const QString& name, int newInitiativ
     auto desc = name.split(' ');
     auto isAttacker = desc[0] == "Attacker";
     auto shipType = desc[1];
-    for (int j = 0; j < maxShipTypes; ++j)
+    for (const auto& n : names_)
     {
       for (int i = 0; i < maxShips; ++i)
       {
-        auto& item = rectItems_[j][i];
+        auto& item = rectItems_[n][i];
         if (item.type == shipType && item.isAttacker == isAttacker)
           item.initiative = newInitiative;
       }
@@ -136,33 +149,24 @@ void ShipGraphicsManager::addShipBorders()
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 
-  for (int i = 0; i < maxShips; ++i)
+  auto i = 0;
+  for (const auto& name : names_)
   {
-    for (int j = 0; j < maxShipTypes; ++j)
+    rectItems_[name].resize(maxShips);
+    for (int j = 0; j < maxShips; ++j)
     {
       auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
       rectangle->setPos(border + i*(w + spacing), border + j*(h + spacing));
-      rectItems_[j][i].item = rectangle;
+      rectItems_[name][j].item = rectangle;
       rectangle->setOpacity(0.1);
     }
+    ++i;
   }
-}
-
-Qt::BrushStyle getPattern(const QString& ship)
-{
-  if (ship == "Interceptor")
-    return Qt::SolidPattern;
-  if (ship == "Cruiser")
-    return Qt::Dense1Pattern;
-  if (ship == "Dreadnought")
-    return Qt::DiagCrossPattern;
-  if (ship == "Starbase")
-    return Qt::BDiagPattern;
-  return Qt::VerPattern;
 }
 
 void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 {
+  names_ = names;
   QPen outlinePen(Qt::white);
   outlinePen.setWidth(2);
 

@@ -39,7 +39,9 @@ private:
       return false;
     }
   };
-  std::map<QString, std::map<int, ShipRect>> rectItems_;
+  
+  std::vector<QString> names_;
+  std::map<QString, std::vector<ShipRect>> rectItems_;
   std::vector<ShipRect> descriptionRects_;
 };
 
