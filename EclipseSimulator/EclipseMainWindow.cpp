@@ -108,6 +108,7 @@ void EclipseMainWindow::startBattle()
 
   log("Start battle.\n");
 
+/*
   using namespace Simulation;
 
   AttackingFleet attacker { { "attacker" }, {} };
@@ -121,7 +122,8 @@ void EclipseMainWindow::startBattle()
   }
 
   BattleHelper bh([this](const std::string& str) { log(QString::fromStdString(str)); });
-  //bh.simulateBattle(attacker, defender, 5);
+  bh.simulateBattle(attacker, defender, 5);
+  */
 }
 
 void EclipseMainWindow::incrementBattle()
@@ -164,7 +166,8 @@ void EclipseMainWindow::setupBattleOrderView()
 
   shipGraphics_ = new ShipGraphicsManager(scene_, this);
   std::vector<QString> shipNames;
-  std::transform(ships_.begin(), ships_.end(), std::back_inserter(shipNames), [](ShipWidgetController* swc) { return swc->name(); });
+  std::transform(ships_.begin(), ships_.end(), std::back_inserter(shipNames),
+    [](ShipWidgetController* swc) { return swc->name(); });
   shipGraphics_->addShipDescriptions(shipNames);
   std::map<QString, int> maxShips;
   std::transform(ships_.begin(), ships_.end(), std::inserter(maxShips, maxShips.end()),

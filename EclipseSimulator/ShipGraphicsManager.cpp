@@ -38,14 +38,13 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
   auto& row = rectItems_[name];
   for (int i = 0; i < row.size(); ++i)
   {
-    auto newShipColumn = leftSide ? i : row.size() - i - 1;
-    if (row[newShipColumn].type.isEmpty())
+    if (row[i].type.isEmpty())
     {
-      row[newShipColumn].type = shipType;
-      row[newShipColumn].isAttacker = isAttacker;
-      row[newShipColumn].initiative = initiative;
-      row[newShipColumn].item->setBrush(QBrush(color, pattern));
-      row[newShipColumn].item->setOpacity(1);
+      row[i].type = shipType;
+      row[i].isAttacker = isAttacker;
+      row[i].initiative = initiative;
+      row[i].item->setBrush(QBrush(color, pattern));
+      row[i].item->setOpacity(1);
       break;
     }
   }
@@ -60,14 +59,13 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
   auto& row = rectItems_[name];
   for (int i = row.size() - 1; i >= 0; --i)
   {
-    auto newShipColumn = leftSide ? i : row.size() - i - 1;
-    if (!row[newShipColumn].type.isEmpty())
+    if (!row[i].type.isEmpty())
     {
-      row[newShipColumn].type = "";
-      row[newShipColumn].item->setBrush(Qt::black);
-      row[newShipColumn].item->setOpacity(0.1);
-      // if (i == 0)
-      //   reorderShips();
+      row[i].type = "";
+      row[i].item->setBrush(Qt::black);
+      row[i].item->setOpacity(0.1);
+      if (i == 0)
+        reorderShips();
       break;
     }
   }
@@ -132,7 +130,7 @@ void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
     auto maxIter = maxShips.find(name);
     if (maxIter == maxShips.end())
     {
-      qDebug() << "END";
+      qDebug() << "Bad ship name:" << name;
       return;
     }
     auto max = maxIter->second;
@@ -153,8 +151,8 @@ void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 {
   names_ = names;
-  QPen outlinePen(Qt::white);
-  outlinePen.setWidth(2);
+  QPen outlinePen(Qt::yellow);
+  outlinePen.setWidth(4);
 
   auto i = 0;
   for (const auto& name : names)
