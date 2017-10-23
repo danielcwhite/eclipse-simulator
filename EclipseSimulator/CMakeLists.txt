@@ -44,11 +44,13 @@ SET(EclipseSimulatorGUI_SOURCES
   ShipSpecEditorDialog.cpp
   ShipWidgetController.cpp
   Simulation.cpp
+  BattleStateMachine.cpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS
   ShipSpec.hpp
   Simulation.hpp
+  BattleStateMachine.hpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS_TO_MOC

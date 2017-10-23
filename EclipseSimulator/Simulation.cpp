@@ -110,20 +110,17 @@ bool Battle::oneRound()
   if (battleComplete())
     return false;
 
-  auto i = 1;
   while (firedShips_.size() < allShips_.size())
   {
     auto attacker = allShips_.front();
     allShips_.pop_front();
 
-    //print() << i++;
     DamageApplier applyDamage(attacker, logger());
     std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
 
     auto deadShipCleanup = [](const FightingShip& ship) { return !ship.isAlive(); };
-    //std::cout << "\t\t~~~allShips before cleanup: " << allShips_.size();
     allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
-    //std::cout << " after cleanup: " << allShips_.size() << std::endl;
+
     firedShips_.push_back(attacker);
     allShips_.push_back(attacker);
 
