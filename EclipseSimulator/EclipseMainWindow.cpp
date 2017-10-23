@@ -121,7 +121,7 @@ void EclipseMainWindow::startBattle()
   }
 
   BattleHelper bh([this](const std::string& str) { log(QString::fromStdString(str)); });
-  bh.simulateBattle(attacker, defender, 5);
+  //bh.simulateBattle(attacker, defender, 5);
 }
 
 void EclipseMainWindow::incrementBattle()
