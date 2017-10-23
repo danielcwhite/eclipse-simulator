@@ -2,7 +2,7 @@
 
 using namespace Simulation;
 
-BattleHelper::BattleHelper(Logger log) : log_(log)
+BattleHelper::BattleHelper(Logger log) : HasLogger(log)
 {
   log("BattleHelper initialized!");
 }
@@ -62,10 +62,10 @@ ResultOfRoll BattleHelper::resultOfAttack(const ShipSpec& shooter, const AttackR
 
 static BattleHelper impl_;
 
-DamageApplier::DamageApplier(const FightingShip& attacker) : attacker_(attacker)
+DamageApplier::DamageApplier(const FightingShip& attacker, Logger log) : HasLogger(log), attacker_(attacker)
 {
   roll_ = impl_.attack(attacker.spec());
-  //print() << "  Roll: \t" << roll_;
+  log("  Roll: \t", roll_);
 }
 
 void DamageApplier::operator()(FightingShip& target)
@@ -78,28 +78,28 @@ void DamageApplier::operator()(FightingShip& target)
     {
       if (result.yellowDice[i] && target.isAlive())
       {
-        //print() << "\t hits.\n";
+        log("\t hits.");
         target.applyDamage(1);
-        //print() << "Target is now " << target << '\n';
+        log("Target is now ", target);
         roll_.yellowDice[i] = 1;
       }
     }
   }
 }
 
-Battle::Battle(const AttackingFleet& attacker, const DefendingFleet& defender)
+Battle::Battle(const AttackingFleet& attacker, const DefendingFleet& defender, Logger l) : HasLogger(l)
 {
   std::copy(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_));
   std::copy(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_));
   std::sort(allShips_.begin(), allShips_.end());
 
-  // print() << "Battle with these sorted ships:\n";
-  // auto i = 1;
-  // for (const auto& ship : allShips_)
-  // {
-  //   print() << i++ << "\t" << ship << "\n";
-  // }
-  // print() << '\n';
+  log("Battle with these sorted ships:");
+  auto i = 1;
+  for (const auto& ship : allShips_)
+  {
+    log(i++, "\t", ship);
+  }
+  log();
 }
 
 bool Battle::oneRound()
@@ -114,7 +114,7 @@ bool Battle::oneRound()
     allShips_.pop_front();
 
     //print() << i++;
-    DamageApplier applyDamage(attacker);
+    DamageApplier applyDamage(attacker, logger());
     std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
 
     auto deadShipCleanup = [](const FightingShip& ship) { return !ship.isAlive(); };
@@ -126,7 +126,7 @@ bool Battle::oneRound()
 
     if (battleComplete())
     {
-      //print() << "\nBATTLE COMPLETE: victor is " << victorString_ << '\n';
+      log("\nBATTLE COMPLETE: victor is ", victorString_);
       return false;
     }
   }
@@ -140,7 +140,7 @@ std::string Battle::fightToDeath()
   do
   {
     roundCount_++;
-    //print() << "Round " << roundCount_ << ":\n";
+    log("Round ", roundCount_, ":");
   }
   while (oneRound());
 
@@ -167,7 +167,7 @@ void BattleHelper::simulateBattle(AttackingFleet& attacker, DefendingFleet& defe
   std::map<std::string, int> results;
   for (int i = 0; i < trials; ++i)
   {
-    Battle battle(attacker, defender);
+    Battle battle(attacker, defender, logger());
     auto result = battle.fightToDeath();
     results[result]++;
     log(result, " wins.");

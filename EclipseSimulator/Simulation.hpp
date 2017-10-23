@@ -160,16 +160,22 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
 
 using Logger = std::function<void(const std::string&)>;
 
-class BattleHelper
+class HasLogger
 {
 public:
-  BattleHelper(Logger log = [](const std::string&) {});
-  int roll();
-  OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
-  AttackRoll attack(const ShipSpec& ship);
-  std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
-  ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
-  void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
+  explicit HasLogger(Logger log = [](const std::string&) {}) : log_(log) {}
+protected:
+  template <typename T, typename... Ts>
+  void log(T&& first, Ts&&... rest)
+  {
+    print(std::forward<T>(first));
+    log(std::forward<Ts>(rest)...);
+  }
+  void log()
+  {
+    print("\n");
+  }
+  Logger logger() const { return log_; }
 private:
   Logger log_;
 
@@ -183,34 +189,34 @@ private:
       log_(ostr.str());
     }
   }
-
-  void log()
-  {
-    print("\n");
-  }
-  
-  template <typename T, typename... Ts>
-  void log(T&& first, Ts&&... rest)
-  {
-    print(std::forward<T>(first));
-    log(std::forward<Ts>(rest)...);
-  }
 };
 
-class DamageApplier
+class BattleHelper : public HasLogger
 {
 public:
-  DamageApplier(const FightingShip& attacker);
+  BattleHelper(Logger log);
+  int roll();
+  OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
+  AttackRoll attack(const ShipSpec& ship);
+  std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
+  ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
+  void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
+};
+
+class DamageApplier : public HasLogger
+{
+public:
+  DamageApplier(const FightingShip& attacker, Logger log);
   void operator()(FightingShip& target);
 private:
   const FightingShip& attacker_;
   AttackRoll roll_;
 };
 
-class Battle
+class Battle : public HasLogger
 {
 public:
-  Battle(const AttackingFleet& attacker, const DefendingFleet& defender);
+  Battle(const AttackingFleet& attacker, const DefendingFleet& defender, Logger log);
   bool oneRound();
   std::string fightToDeath();
 private:
