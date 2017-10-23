@@ -21,6 +21,7 @@ private Q_SLOTS:
   void startBattle();
   void incrementBattle();
   void finishBattle();
+  void simulateBattle();
 
 private:
   void setupBattleOrderView();

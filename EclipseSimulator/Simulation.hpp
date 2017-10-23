@@ -9,6 +9,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include <sstream>
 #include "ShipSpec.hpp"
 
 namespace Simulation
@@ -157,15 +158,43 @@ std::ostream& operator<<(std::ostream& o, const FleetSpec<ShipType>& fleet)
   return o;
 }
 
+using Logger = std::function<void(const std::string&)>;
+
 class BattleHelper
 {
 public:
+  BattleHelper(Logger log = [](const std::string&) {});
   int roll();
   OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
   AttackRoll attack(const ShipSpec& ship);
   std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
   ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
   void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
+private:
+  Logger log_;
+
+  template <typename T>
+  void print(T&& t)
+  {
+    if (log_)
+    {
+      std::ostringstream ostr;
+      ostr << t;
+      log_(ostr.str());
+    }
+  }
+
+  void log()
+  {
+    print("\n");
+  }
+  
+  template <typename T, typename... Ts>
+  void log(T&& first, Ts&&... rest)
+  {
+    print(std::forward<T>(first));
+    log(std::forward<Ts>(rest)...);
+  }
 };
 
 class DamageApplier

@@ -24,6 +24,7 @@ public:
   const ShipSpec& spec() const { return spec_; }
   bool isAttacker() const { return name().split(' ')[0] == "Attacker"; }
   int activeCount() const { return widgets_.count->value(); }
+  void setEnabled(bool enabled);
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();

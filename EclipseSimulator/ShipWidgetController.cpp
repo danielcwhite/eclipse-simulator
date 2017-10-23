@@ -20,6 +20,13 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   updateSpecLabel();
 }
 
+void ShipWidgetController::setEnabled(bool enabled)
+{
+  widgets_.edit->setEnabled(enabled);
+  widgets_.add->setEnabled(enabled);
+  widgets_.remove->setEnabled(enabled);
+}
+
 void ShipWidgetController::addShipPressed()
 {
   auto oldValue = widgets_.count->intValue();

@@ -91,6 +91,7 @@ EclipseMainWindow::EclipseMainWindow()
   connect(startPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::startBattle);
   connect(nextPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::incrementBattle);
   connect(finishPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::finishBattle);
+  connect(runSimulationPushButton_, &QPushButton::clicked, this, &EclipseMainWindow::simulateBattle);
 
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
@@ -102,24 +103,30 @@ void EclipseMainWindow::startBattle()
   nextPushButton_->setEnabled(true);
   finishPushButton_->setEnabled(true);
 
+  for (auto& swc : ships_)
+    swc->setEnabled(false);
+
+  log("Start battle.\n");
+
   using namespace Simulation;
 
-  AttackingFleet player { { "player" }, {} };
-  DefendingFleet ancient { { "ancients" }, {}};
+  AttackingFleet attacker { { "attacker" }, {} };
+  DefendingFleet defender { { "defender" }, {} };
   for (const auto& ship : ships_)
   {
     if (ship->isAttacker())
-      player.addNewShip(ship->spec(), ship->activeCount());
+      attacker.addNewShip(ship->spec(), ship->activeCount());
     else
-      ancient.addNewShip(ship->spec(), ship->activeCount());
+      defender.addNewShip(ship->spec(), ship->activeCount());
   }
 
-  BattleHelper bh;
-  bh.simulateBattle(player, ancient, numTrialsSpinBox_->value());
+  BattleHelper bh([this](const std::string& str) { log(QString::fromStdString(str)); });
+  bh.simulateBattle(attacker, defender, 5);
 }
 
 void EclipseMainWindow::incrementBattle()
 {
+  log("incrementBattle\n");
   //auto r = Simulation::roll();
   //log(toString(r));
   //startPushButton_->setEnabled(false);
@@ -129,24 +136,22 @@ void EclipseMainWindow::incrementBattle()
 
 void EclipseMainWindow::finishBattle()
 {
-  log(__FUNCTION__);
+  log("finishBattle\n");
   startPushButton_->setEnabled(true);
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
+  for (auto& swc : ships_)
+    swc->setEnabled(true);
 }
 
-// void EclipseMainWindow::append(const QString& str)
-// {
-//   auto current = battleResultsTextEdit_->toPlainText();
-//   battleResultsTextEdit_->setText(current + str);
-//   battleResultsTextEdit_->verticalScrollBar()->setValue(battleResultsTextEdit_->verticalScrollBar()->maximum());
-// }
+void EclipseMainWindow::simulateBattle()
+{
+  log("Does nothing yet\n");
+}
 
 void EclipseMainWindow::log(const QString& str)
 {
   auto current = battleResultsTextEdit_->toPlainText();
-  if (!current.isEmpty())
-    current += "\n";
   battleResultsTextEdit_->setText(current + str);
   battleResultsTextEdit_->verticalScrollBar()->setValue(battleResultsTextEdit_->verticalScrollBar()->maximum());
 }

@@ -2,6 +2,11 @@
 
 using namespace Simulation;
 
+BattleHelper::BattleHelper(Logger log) : log_(log)
+{
+  log("BattleHelper initialized!");
+}
+
 int BattleHelper::roll()
 {
   static std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -165,12 +170,12 @@ void BattleHelper::simulateBattle(AttackingFleet& attacker, DefendingFleet& defe
     Battle battle(attacker, defender);
     auto result = battle.fightToDeath();
     results[result]++;
-    //print() << result << " wins" << '\n';
+    log(result, " wins.");
   }
 
-  // print() << "After " << trials << " simulations, the results are: \n";
-  // for (const auto& result : results)
-  // {
-  //   print() << result.first << " won " << result.second << " times.\n";
-  // }
+  log("After ", trials, " simulations, the results are:");
+  for (const auto& result : results)
+  {
+    log(result.first, " won ", result.second, " times.");
+  }
 }
