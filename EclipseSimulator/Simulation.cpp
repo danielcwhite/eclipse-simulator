@@ -7,7 +7,7 @@ BattleHelper::BattleHelper(Logger log) : HasLogger(log)
   log("BattleHelper initialized!");
 }
 
-int BattleHelper::roll()
+int DamageApplier::roll()
 {
   static std::random_device rd;  //Will be used to obtain a seed for the random number engine
   static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
@@ -15,7 +15,7 @@ int BattleHelper::roll()
   return dis(gen);
 }
 
-OneGunRoll BattleHelper::rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
+OneGunRoll DamageApplier::rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
 {
   OneGunRoll gunRoll;
   for (int i = 0; i < ship.*gun; ++i)
@@ -23,7 +23,7 @@ OneGunRoll BattleHelper::rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
   return gunRoll;
 }
 
-AttackRoll BattleHelper::attack(const ShipSpec& ship)
+AttackRoll DamageApplier::attack(const ShipSpec& ship)
 {
   return {
     rollGuns(ship, &ShipSpec::yellowGuns),
@@ -32,7 +32,7 @@ AttackRoll BattleHelper::attack(const ShipSpec& ship)
   };
 }
 
-std::function<HitResult(const OneGunRoll&)> BattleHelper::resultOfAttackPart(int computer, int shield)
+std::function<HitResult(const OneGunRoll&)> DamageApplier::resultOfAttackPart(int computer, int shield)
 {
   return [=](const OneGunRoll& roll)
   {
@@ -50,7 +50,7 @@ std::function<HitResult(const OneGunRoll&)> BattleHelper::resultOfAttackPart(int
   };
 }
 
-ResultOfRoll BattleHelper::resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target)
+ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target)
 {
   auto attackFunc = resultOfAttackPart(shooter.computer, target.shield);
   return {
@@ -60,11 +60,9 @@ ResultOfRoll BattleHelper::resultOfAttack(const ShipSpec& shooter, const AttackR
   };
 }
 
-static BattleHelper impl_;
-
-DamageApplier::DamageApplier(const FightingShip& attacker, Logger log) : HasLogger(log), attacker_(attacker)
+DamageApplier::DamageApplier(const FightingShip& attacker, Logger l) : HasLogger(l), attacker_(attacker)
 {
-  roll_ = impl_.attack(attacker.spec());
+  roll_ = attack(attacker.spec());
   log("  Roll: \t", roll_);
 }
 
@@ -72,7 +70,7 @@ void DamageApplier::operator()(FightingShip& target)
 {
   if (attacker_.isFighting(target))
   {
-    auto result = impl_.resultOfAttack(attacker_.spec(), roll_, target.spec());
+    auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
 
     for (auto i = 0; i < result.yellowDice.size(); ++i)
     {
@@ -89,6 +87,11 @@ void DamageApplier::operator()(FightingShip& target)
 
 Battle::Battle(const AttackingFleet& attacker, const DefendingFleet& defender, Logger l) : HasLogger(l)
 {
+  if (attacker.ships().empty() || defender.ships().empty())
+  {
+    log("No battle--empty side.");
+    return;
+  }
   std::copy(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_));
   std::copy(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_));
   std::sort(allShips_.begin(), allShips_.end());
@@ -149,6 +152,11 @@ std::string Battle::fightToDeath()
 
 bool Battle::battleComplete()
 {
+  if (allShips_.empty())
+  {
+    victorString_ = "Nobody";
+    return true;
+  }
   if (std::all_of(allShips_.begin(), allShips_.end(), [](const FightingShip& ship) { return ship.isAttacker(); }))
   {
     victorString_ = "Attacker";

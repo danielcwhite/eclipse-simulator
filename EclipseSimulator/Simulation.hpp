@@ -195,11 +195,6 @@ class BattleHelper : public HasLogger
 {
 public:
   BattleHelper(Logger log);
-  int roll();
-  OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
-  AttackRoll attack(const ShipSpec& ship);
-  std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
-  ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
   void simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials);
 };
 
@@ -208,7 +203,14 @@ class DamageApplier : public HasLogger
 public:
   DamageApplier(const FightingShip& attacker, Logger log);
   void operator()(FightingShip& target);
+
 private:
+  int roll();
+  OneGunRoll rollGuns(const ShipSpec& ship, int ShipSpec::*gun);
+  AttackRoll attack(const ShipSpec& ship);
+  std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
+  ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
+
   const FightingShip& attacker_;
   AttackRoll roll_;
 };
