@@ -66,26 +66,26 @@ std::shared_ptr<BattleState> ResetShipsState::update(Battle2& battle)
 
 void Battle2::setActiveAttacker()
 {
-  log(__FUNCTION__);
+  log(__PRETTY_FUNCTION__);
 }
 
 void Battle2::applyDamage()
 {
-  log(__FUNCTION__);
+  log(__PRETTY_FUNCTION__);
 }
 
 void Battle2::cleanupDeadShips()
 {
-  log(__FUNCTION__);
+  log(__PRETTY_FUNCTION__);
 }
 
 bool Battle2::checkForVictory()
 {
-  log(__FUNCTION__);
+  log(__PRETTY_FUNCTION__);
   return false;
 }
 
 void Battle2::resetShipsForNextRound()
 {
-  log(__FUNCTION__);
+  log(__PRETTY_FUNCTION__);
 }

@@ -129,13 +129,14 @@ void EclipseMainWindow::startBattle()
 void EclipseMainWindow::incrementBattle()
 {
   if (battle_)
-    log(QString("incrementBattle:") + battle_->update());
+  {
+    auto result = battle_->update();
+    log(tr("result of incrementBattle: %0\n").arg(result));
 
-  //auto r = Simulation::roll();
-  //log(toString(r));
-  //startPushButton_->setEnabled(false);
-  //nextPushButton_->setEnabled(true);
-  //finishPushButton_->setEnabled(true);
+    startPushButton_->setEnabled(!result);
+    nextPushButton_->setEnabled(result);
+    finishPushButton_->setEnabled(result);
+  }
 }
 
 void EclipseMainWindow::finishBattle()
