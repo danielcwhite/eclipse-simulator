@@ -78,7 +78,6 @@ std::shared_ptr<BattleState> ResetShipsState::update(Battle2& battle)
 
 void Battle2::setActiveAttacker()
 {
-  log(__PRETTY_FUNCTION__);
   activeAttacker_ = allShips_.front();
   log("Active ship: ", *activeAttacker_);
   allShips_.pop_front();
@@ -86,7 +85,6 @@ void Battle2::setActiveAttacker()
 
 void Battle2::applyDamage()
 {
-  log(__PRETTY_FUNCTION__);
   DamageApplier applyDamage(*activeAttacker_, logger());
   std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
 }
@@ -103,8 +101,6 @@ bool Battle2::roundComplete() const
 
 void Battle2::cleanupDeadShips()
 {
-  log(__PRETTY_FUNCTION__);
-
   auto deadShipCleanup = [](const ShipPtr& ship) { return !ship->isAlive(); };
   auto count = allShips_.size();
   allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
@@ -118,13 +114,13 @@ void Battle2::cleanupDeadShips()
 
 bool Battle2::checkForVictory()
 {
-  log(__PRETTY_FUNCTION__);
-
   if (battleComplete())
   {
     log("\nBATTLE COMPLETE: victor is ", victorString_, "\n");
     return true;
   }
+  else
+    log("Battle is ongoing.");
 
   return false;
 }
@@ -151,6 +147,6 @@ bool Battle2::battleComplete()
 
 void Battle2::resetShipsForNextRound()
 {
-  log(__PRETTY_FUNCTION__);
+  log("Ready for next round.");
   firedShips_.clear();
 }

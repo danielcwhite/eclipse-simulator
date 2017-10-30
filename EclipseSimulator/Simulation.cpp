@@ -63,7 +63,7 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
 DamageApplier::DamageApplier(const FightingShip& attacker, Logger l) : HasLogger(l), attacker_(attacker)
 {
   roll_ = attack(attacker.spec());
-  log("  Roll: \t", roll_);
+  log(attacker, "\nrolls: \t", roll_);
 }
 
 void DamageApplier::operator()(FightingShip& target)

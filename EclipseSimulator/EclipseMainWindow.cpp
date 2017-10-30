@@ -142,11 +142,11 @@ void EclipseMainWindow::incrementBattle()
 {
   if (battle_)
   {
+    log("--------------------------\n");
     auto result = battle_->update();
-    log(tr("result of incrementBattle: %0\n").arg(result ? "ongoing" : "complete"));
+    //log(tr("result of incrementBattle: %0\n").arg(result ? "ongoing" : "complete"));
 
     nextPushButton_->setEnabled(result);
-    //finishPushButton_->setEnabled(result);
   }
 }
 

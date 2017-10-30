@@ -117,7 +117,7 @@ inline std::ostream& operator<<(std::ostream& o, const Ship& ship)
 
 inline std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
 {
-  return o << (std::get<1>(fs) ? "ATK: " : "DEF: ") << std::get<0>(fs) << " " << &fs;
+  return o << (std::get<1>(fs) ? "ATK: " : "DEF: ") << std::get<0>(fs);
 }
 
 template <class ShipType>
