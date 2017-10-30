@@ -164,8 +164,8 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto pattern = getPattern(shipType);
     auto leftSide = isAttacker;
 
-    auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, QBrush(color, pattern));
-    rectangle->setPos(leftSide ? -30 : 250, 5 + 40*i);
+    auto rectangle = scene_->addRect(0, 0, 3*w, h, outlinePen, QBrush(color, pattern));
+    rectangle->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
 
     ShipRect r(rectangle, name, shipType, isAttacker, 0);
 

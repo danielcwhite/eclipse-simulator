@@ -20,6 +20,7 @@ EclipseMainWindow::EclipseMainWindow()
         attackerInterceptorAddToolButton_,
         attackerInterceptorRemoveToolButton_,
         attackerInterceptorCountLcdNumber_,
+        groupBox_6
       },
       "Attacker Interceptor",
       8,
@@ -30,6 +31,7 @@ EclipseMainWindow::EclipseMainWindow()
         attackerCruiserAddToolButton_,
         attackerCruiserRemoveToolButton_,
         attackerCruiserCountLcdNumber_,
+        groupBox_7
       },
       "Attacker Cruiser",
       4,
@@ -40,6 +42,7 @@ EclipseMainWindow::EclipseMainWindow()
         attackerDreadnoughtAddToolButton_,
         attackerDreadnoughtRemoveToolButton_,
         attackerDreadnoughtCountLcdNumber_,
+        groupBox_8
       },
       "Attacker Dreadnought",
       2,
@@ -51,6 +54,7 @@ EclipseMainWindow::EclipseMainWindow()
         defenderInterceptorAddToolButton_,
         defenderInterceptorRemoveToolButton_,
         defenderInterceptorCountLcdNumber_,
+        groupBox_10
       },
       "Defender Interceptor",
       8,
@@ -61,6 +65,7 @@ EclipseMainWindow::EclipseMainWindow()
         defenderCruiserAddToolButton_,
         defenderCruiserRemoveToolButton_,
         defenderCruiserCountLcdNumber_,
+        groupBox_12
       },
       "Defender Cruiser",
       4,
@@ -71,6 +76,7 @@ EclipseMainWindow::EclipseMainWindow()
         defenderDreadnoughtAddToolButton_,
         defenderDreadnoughtRemoveToolButton_,
         defenderDreadnoughtCountLcdNumber_,
+        groupBox_11
       },
       "Defender Dreadnought",
       2,
@@ -81,6 +87,7 @@ EclipseMainWindow::EclipseMainWindow()
         defenderStarbaseAddToolButton_,
         defenderStarbaseRemoveToolButton_,
         defenderStarbaseCountLcdNumber_,
+        groupBox_13
       },
       "Defender Starbase",
       4,
@@ -105,7 +112,12 @@ void EclipseMainWindow::startBattle()
   finishPushButton_->setEnabled(true);
 
   for (auto& swc : ships_)
+  {
     swc->setEnabled(false);
+    if (swc->activeCount() == 0)
+      swc->hide();
+  }
+
 
   log("Start battle.\n");
 
@@ -145,7 +157,11 @@ void EclipseMainWindow::finishBattle()
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
   for (auto& swc : ships_)
+  {
     swc->setEnabled(true);
+    if (swc->activeCount() == 0)
+      swc->show();
+  }
 }
 
 void EclipseMainWindow::simulateBattle()

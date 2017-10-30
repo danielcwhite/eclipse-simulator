@@ -12,6 +12,7 @@ struct ShipWidgets
   QToolButton* add;
   QToolButton* remove;
   QLCDNumber* count;
+  QGroupBox* box;
 };
 
 class ShipWidgetController : public QObject
@@ -25,6 +26,8 @@ public:
   bool isAttacker() const { return name().split(' ')[0] == "Attacker"; }
   int activeCount() const { return widgets_.count->value(); }
   void setEnabled(bool enabled);
+  void hide();
+  void show();
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();

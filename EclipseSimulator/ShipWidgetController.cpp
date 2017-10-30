@@ -91,3 +91,13 @@ void ShipWidgetController::specRejected()
 {
   qDebug() << "spec rejected:" << name_;
 }
+
+void ShipWidgetController::hide()
+{
+  widgets_.box->hide();
+}
+
+void ShipWidgetController::show()
+{
+  widgets_.box->show();
+}
