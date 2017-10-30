@@ -7,6 +7,7 @@
 #include <QGraphicsItem>
 #include <QtWidgets>
 #include <Simulation.hpp>
+#include <BattleStateMachine.hpp>
 
 EclipseMainWindow::EclipseMainWindow()
 {
@@ -108,8 +109,9 @@ void EclipseMainWindow::startBattle()
 
   log("Start battle.\n");
 
-/*
+
   using namespace Simulation;
+  using namespace StateMachine;
 
   AttackingFleet attacker { { "attacker" }, {} };
   DefendingFleet defender { { "defender" }, {} };
@@ -120,15 +122,15 @@ void EclipseMainWindow::startBattle()
     else
       defender.addNewShip(ship->spec(), ship->activeCount());
   }
-
-  BattleHelper bh([this](const std::string& str) { log(QString::fromStdString(str)); });
-  bh.simulateBattle(attacker, defender, 5);
-  */
+  battle_ = std::make_shared<Battle2>(attacker, defender,
+    [this](const std::string& str) { log(QString::fromStdString(str)); });
 }
 
 void EclipseMainWindow::incrementBattle()
 {
-  log("incrementBattle\n");
+  if (battle_)
+    log(QString("incrementBattle:") + battle_->update());
+
   //auto r = Simulation::roll();
   //log(toString(r));
   //startPushButton_->setEnabled(false);

@@ -4,11 +4,17 @@
 #include <QMainWindow>
 #include <ShipSpec.hpp>
 #include <sstream>
+#include <memory>
 #include "ui_EclipseSimulatorMainWindow.h"
 #include "ui_ShipSpecEditor.h"
 
 class ShipWidgetController;
 class ShipGraphicsManager;
+
+namespace StateMachine
+{
+  class Battle2;
+}
 
 class EclipseMainWindow : public QMainWindow, public Ui::EclipseSimMainWindow
 {
@@ -30,6 +36,7 @@ private:
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
   ShipGraphicsManager* shipGraphics_;
+  std::shared_ptr<StateMachine::Battle2> battle_;
 };
 
 template <class T>

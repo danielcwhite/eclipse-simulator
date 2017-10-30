@@ -2,6 +2,7 @@
 #define BATTLE_STATE_MACHINE
 
 #include <Simulation.hpp>
+#include <memory>
 
 namespace StateMachine
 {
@@ -23,10 +24,12 @@ namespace StateMachine
     virtual std::shared_ptr<BattleState> update(Battle2& battle) = 0;
   };
 
-  class Battle2 : public HasLogger
+  class Battle2 : public Simulation::HasLogger
   {
   public:
-    Battle2(const AttackingFleet& attacker, const DefendingFleet& defender, Logger log);
+    Battle2(const Simulation::AttackingFleet& attacker,
+      const Simulation::DefendingFleet& defender,
+      Simulation::Logger log);
 
     bool update();
 
@@ -41,8 +44,8 @@ namespace StateMachine
   private:
     std::shared_ptr<BattleState> state_;
 
-    FightingShip attacker_;
-    std::deque<FightingShip> allShips_, firedShips_;
+    std::unique_ptr<Simulation::FightingShip> attacker_;
+    std::deque<Simulation::FightingShip> allShips_, firedShips_;
     int roundCount_{0};
     std::string victorString_;
 
