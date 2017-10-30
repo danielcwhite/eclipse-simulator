@@ -35,6 +35,7 @@ namespace StateMachine
 
     void setActiveAttacker();
     void applyDamage();
+    bool roundComplete() const;
     void cleanupDeadShips();
     bool checkForVictory();
     void resetShipsForNextRound();

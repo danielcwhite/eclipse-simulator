@@ -72,14 +72,19 @@ void DamageApplier::operator()(FightingShip& target)
   {
     auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
 
+    //TODO: incorporate orange and red guns here
     for (auto i = 0; i < result.yellowDice.size(); ++i)
     {
       if (result.yellowDice[i] && target.isAlive())
       {
-        log("\t hits.");
+        log("\t hits: ", target);
         target.applyDamage(1);
-        log("Target is now ", target);
+        log("Target status is now ", target);
         roll_.yellowDice[i] = 1;
+      }
+      else
+      {
+        log("\t misses: ", target);
       }
     }
   }

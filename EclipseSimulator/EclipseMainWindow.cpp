@@ -131,11 +131,10 @@ void EclipseMainWindow::incrementBattle()
   if (battle_)
   {
     auto result = battle_->update();
-    log(tr("result of incrementBattle: %0\n").arg(result));
+    log(tr("result of incrementBattle: %0\n").arg(result ? "ongoing" : "complete"));
 
-    startPushButton_->setEnabled(!result);
     nextPushButton_->setEnabled(result);
-    finishPushButton_->setEnabled(result);
+    //finishPushButton_->setEnabled(result);
   }
 }
 

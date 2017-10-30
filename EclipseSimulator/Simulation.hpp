@@ -116,7 +116,7 @@ inline std::ostream& operator<<(std::ostream& o, const Ship& ship)
 
 inline std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
 {
-  return o << std::get<0>(fs) << " " << (std::get<1>(fs) ? "atk " : "def ") << &fs;
+  return o << (std::get<1>(fs) ? "ATK: " : "DEF: ") << std::get<0>(fs) << " " << &fs;
 }
 
 template <class ShipType>
@@ -166,12 +166,12 @@ public:
   explicit HasLogger(Logger log = [](const std::string&) {}) : log_(log) {}
 protected:
   template <typename T, typename... Ts>
-  void log(T&& first, Ts&&... rest)
+  void log(T&& first, Ts&&... rest) const
   {
     print(std::forward<T>(first));
     log(std::forward<Ts>(rest)...);
   }
-  void log()
+  void log() const
   {
     print("\n");
   }
@@ -180,7 +180,7 @@ private:
   Logger log_;
 
   template <typename T>
-  void print(T&& t)
+  void print(T&& t) const
   {
     if (log_)
     {
