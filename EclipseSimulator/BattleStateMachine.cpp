@@ -3,6 +3,15 @@
 using namespace StateMachine;
 using namespace Simulation;
 
+template <class T>
+struct PtrSort
+{
+  bool operator()(const std::shared_ptr<T>& t1, std::shared_ptr<T>& t2) const
+  {
+    return *t1 < *t2;
+  }
+};
+
 Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender, Logger l)
   : HasLogger(l)
 {
@@ -11,15 +20,16 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
     log("No battle--empty side.");
     return;
   }
-  std::copy(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_));
-  std::copy(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_));
-  std::sort(allShips_.begin(), allShips_.end());
+  auto func = [](const FightingShip& ship) { return std::make_shared<FightingShip>(ship); };
+  std::transform(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_), func);
+  std::transform(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_), func);
+  std::sort(allShips_.begin(), allShips_.end(), PtrSort<FightingShip>());
 
   log("Battle with these sorted ships:");
   auto i = 1;
   for (const auto& ship : allShips_)
   {
-    log(i++, "\t", ship);
+    log(i++, "\t", *ship);
   }
   log();
 
@@ -69,15 +79,15 @@ std::shared_ptr<BattleState> ResetShipsState::update(Battle2& battle)
 void Battle2::setActiveAttacker()
 {
   log(__PRETTY_FUNCTION__);
-  attacker_.reset(new FightingShip(allShips_.front()));
-  log("Active ship: ", *attacker_);
+  activeAttacker_ = allShips_.front();
+  log("Active ship: ", *activeAttacker_);
   allShips_.pop_front();
 }
 
 void Battle2::applyDamage()
 {
   log(__PRETTY_FUNCTION__);
-  DamageApplier applyDamage(*attacker_, logger());
+  DamageApplier applyDamage(*activeAttacker_, logger());
   std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
 }
 
@@ -95,14 +105,15 @@ void Battle2::cleanupDeadShips()
 {
   log(__PRETTY_FUNCTION__);
 
-  auto deadShipCleanup = [](const FightingShip& ship) { return !ship.isAlive(); };
+  auto deadShipCleanup = [](const ShipPtr& ship) { return !ship->isAlive(); };
   auto count = allShips_.size();
   allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
   auto removed = count - allShips_.size();
   log("Removed ", removed, " dead ships.");
 
-  firedShips_.push_back(*attacker_);
-  allShips_.push_back(*attacker_);
+  firedShips_.push_back(activeAttacker_);
+  allShips_.push_back(activeAttacker_);
+  activeAttacker_ = nullptr;
 }
 
 bool Battle2::checkForVictory()
@@ -125,12 +136,12 @@ bool Battle2::battleComplete()
     victorString_ = "Nobody";
     return true;
   }
-  if (std::all_of(allShips_.begin(), allShips_.end(), [](const FightingShip& ship) { return ship.isAttacker(); }))
+  if (std::all_of(allShips_.begin(), allShips_.end(), [](const ShipPtr& ship) { return ship->isAttacker(); }))
   {
     victorString_ = "Attacker";
     return true;
   }
-  if (std::all_of(allShips_.begin(), allShips_.end(), [](const FightingShip& ship) { return !ship.isAttacker(); }))
+  if (std::all_of(allShips_.begin(), allShips_.end(), [](const ShipPtr& ship) { return !ship->isAttacker(); }))
   {
     victorString_ = "Defender";
     return true;

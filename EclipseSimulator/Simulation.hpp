@@ -10,6 +10,7 @@
 #include <functional>
 #include <algorithm>
 #include <sstream>
+#include <memory>
 #include "ShipSpec.hpp"
 
 namespace Simulation
@@ -203,6 +204,7 @@ class DamageApplier : public HasLogger
 public:
   DamageApplier(const FightingShip& attacker, Logger log);
   void operator()(FightingShip& target);
+  void operator()(std::shared_ptr<FightingShip> target) { this->operator()(*target); }
 
 private:
   int roll();

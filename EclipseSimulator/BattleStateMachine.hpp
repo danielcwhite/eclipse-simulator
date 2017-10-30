@@ -24,6 +24,8 @@ namespace StateMachine
     virtual std::shared_ptr<BattleState> update(Battle2& battle) = 0;
   };
 
+  using ShipPtr = std::shared_ptr<Simulation::FightingShip>;
+
   class Battle2 : public Simulation::HasLogger
   {
   public:
@@ -45,8 +47,8 @@ namespace StateMachine
   private:
     std::shared_ptr<BattleState> state_;
 
-    std::unique_ptr<Simulation::FightingShip> attacker_;
-    std::deque<Simulation::FightingShip> allShips_, firedShips_;
+    ShipPtr activeAttacker_;
+    std::deque<ShipPtr> allShips_, firedShips_;
     int roundCount_{0};
     std::string victorString_;
 
