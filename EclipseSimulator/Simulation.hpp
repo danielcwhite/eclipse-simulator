@@ -13,9 +13,21 @@
 #include <memory>
 #include "ShipSpec.hpp"
 
+class ShipInterface
+{
+public:
+  virtual ~ShipInterface() {}
+  virtual bool isAttacker() const = 0;
+  virtual bool isFighting(const ShipInterface& other) const = 0;
+  virtual bool isAlive() const = 0;
+  virtual void applyDamage(int amount) = 0;
+  virtual ShipSpec spec() const = 0;
+};
+
+using ShipPtr = std::shared_ptr<ShipInterface>;
+
 namespace Simulation
 {
-
 
 template <typename T>
 using Roll = std::vector<T>;
@@ -202,9 +214,8 @@ public:
 class DamageApplier : public HasLogger
 {
 public:
-  DamageApplier(const FightingShip& attacker, Logger log);
-  void operator()(FightingShip& target);
-  void operator()(std::shared_ptr<FightingShip> target) { this->operator()(*target); }
+  DamageApplier(const ShipPtr& attacker, Logger log);
+  void operator()(ShipPtr target);
 
 private:
   int roll();
@@ -213,7 +224,7 @@ private:
   std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
   ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
 
-  const FightingShip& attacker_;
+  ShipPtr attacker_;
   AttackRoll roll_;
 };
 

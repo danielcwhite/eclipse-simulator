@@ -12,7 +12,9 @@ struct PtrSort
   }
 };
 
-Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender, Logger l)
+Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
+  ShipFactoryPtr factory,
+  Logger l)
   : HasLogger(l)
 {
   if (attacker.ships().empty() || defender.ships().empty())
@@ -20,10 +22,10 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
     log("No battle--empty side.");
     return;
   }
-  auto func = [](const FightingShip& ship) { return std::make_shared<FightingShip>(ship); };
+  auto func = [factory](const FightingShip& ship) { return factory->make(ship); };
   std::transform(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_), func);
   std::transform(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_), func);
-  std::sort(allShips_.begin(), allShips_.end(), PtrSort<FightingShip>());
+  //std::sort(allShips_.begin(), allShips_.end(), PtrSort<ShipInterface>());
 
   log("Battle with these sorted ships:");
   auto i = 1;

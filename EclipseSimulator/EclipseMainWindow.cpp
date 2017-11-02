@@ -103,10 +103,6 @@ EclipseMainWindow::EclipseMainWindow()
 
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
-
-  QSettings settings;
-  auto keys = settings.allKeys();
-  qDebug() << "Settings keys: " << keys;
 }
 
 void EclipseMainWindow::startBattle()
@@ -138,7 +134,7 @@ void EclipseMainWindow::startBattle()
     else
       defender.addNewShip(ship->spec(), ship->activeCount());
   }
-  battle_ = std::make_shared<Battle2>(attacker, defender,
+  battle_ = std::make_shared<Battle2>(attacker, defender, nullptr,
     [this](const std::string& str) { log(QString::fromStdString(str)); });
 }
 

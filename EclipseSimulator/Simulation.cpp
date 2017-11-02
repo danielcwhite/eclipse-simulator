@@ -60,25 +60,25 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
   };
 }
 
-DamageApplier::DamageApplier(const FightingShip& attacker, Logger l) : HasLogger(l), attacker_(attacker)
+DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l) : HasLogger(l), attacker_(attacker)
 {
-  roll_ = attack(attacker.spec());
+  roll_ = attack(attacker->spec());
   log(attacker, "\nrolls: \t", roll_);
 }
 
-void DamageApplier::operator()(FightingShip& target)
+void DamageApplier::operator()(ShipPtr target)
 {
-  if (attacker_.isFighting(target))
+  if (attacker_->isFighting(*target))
   {
-    auto result = resultOfAttack(attacker_.spec(), roll_, target.spec());
+    auto result = resultOfAttack(attacker_->spec(), roll_, target->spec());
 
     //TODO: incorporate orange and red guns here
     for (auto i = 0; i < result.yellowDice.size(); ++i)
     {
-      if (result.yellowDice[i] && target.isAlive())
+      if (result.yellowDice[i] && target->isAlive())
       {
         log("\t hits: ", target);
-        target.applyDamage(1);
+        target->applyDamage(1);
         log("Target status is now ", target);
         roll_.yellowDice[i] = 1;
       }
