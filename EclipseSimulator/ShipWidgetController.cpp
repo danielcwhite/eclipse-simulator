@@ -13,11 +13,25 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   widgets_.remove->setDisabled(true);
 
   editor_->hide();
-  editor_->setSpec({});
+  editor_->readSpec();
   connect(editor_, &QDialog::accepted, this, &ShipWidgetController::specAccepted);
   connect(editor_, &QDialog::rejected, this, &ShipWidgetController::specRejected);
 
   updateSpecLabel();
+}
+
+void ShipWidgetController::updateShipCount()
+{
+  QSettings settings;
+  countSettingsKey_ = name_ + "_count";
+  if (settings.contains(settingsKey_))
+  {
+    auto count = settings.value(settingsKey_).toInt();
+    for (int i = 0; i < count; ++i)
+      addShipPressed();
+  }
+  else
+    settings.setValue(settingsKey_, 0);
 }
 
 void ShipWidgetController::setEnabled(bool enabled)
@@ -41,7 +55,7 @@ void ShipWidgetController::addShipPressed()
     Q_EMIT shipAdded(name_, spec_.initiative);
 
     QSettings settings;
-    settings.setValue(name_ + "_count",  widgets_.count->intValue());
+    settings.setValue(settingsKey_, widgets_.count->intValue());
   }
 }
 
@@ -59,7 +73,7 @@ void ShipWidgetController::removeShipPressed()
     Q_EMIT shipRemoved(name_);
 
     QSettings settings;
-    settings.setValue(name_ + "_count",  widgets_.count->intValue());
+    settings.setValue(settingsKey_, widgets_.count->intValue());
   }
 }
 
@@ -106,4 +120,24 @@ void ShipWidgetController::hide()
 void ShipWidgetController::show()
 {
   widgets_.box->show();
+}
+
+void ShipWidgetController::readSpec()
+{
+  QSettings settings;
+  if (settings.contains(settingsKey_))
+  {
+    auto specStr = settings.value(settingsKey_).toString();
+    qDebug() << tr("Read setting for %0: %1").arg(settingsKey_).arg(specStr);
+  }
+}
+
+void ShipWidgetController::writeSpec()
+{
+  QSettings settings;
+  std::ostringstream ostr;
+  ostr << displayedSpec_;
+  auto val = QString::fromStdString(ostr.str());
+  qDebug() << "Setting " << settingsKey_ << " to " << val;
+  settings.setValue(settingsKey_, val);
 }

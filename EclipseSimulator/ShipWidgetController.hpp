@@ -28,6 +28,9 @@ public:
   void setEnabled(bool enabled);
   void hide();
   void show();
+  void updateShipCount();
+  void readSpec();
+  void writeSpec();
 public Q_SLOTS:
   void addShipPressed();
   void removeShipPressed();
@@ -45,6 +48,7 @@ private:
   const int maxShips_;
   class ShipSpecEditorDialog* editor_;
   ShipSpec spec_;
+  QString countSettingsKey_, specSettingsKey_;
 };
 
 #endif
