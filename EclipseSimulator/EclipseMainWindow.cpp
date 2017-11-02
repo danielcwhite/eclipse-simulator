@@ -103,6 +103,10 @@ EclipseMainWindow::EclipseMainWindow()
 
   nextPushButton_->setEnabled(false);
   finishPushButton_->setEnabled(false);
+
+  QSettings settings;
+  auto keys = settings.allKeys();
+  qDebug() << "Settings keys: " << keys;
 }
 
 void EclipseMainWindow::startBattle()

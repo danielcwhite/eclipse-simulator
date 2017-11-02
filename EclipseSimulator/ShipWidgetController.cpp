@@ -39,6 +39,9 @@ void ShipWidgetController::addShipPressed()
     }
     widgets_.remove->setEnabled(true);
     Q_EMIT shipAdded(name_, spec_.initiative);
+
+    QSettings settings;
+    settings.setValue(name_ + "_count",  widgets_.count->intValue());
   }
 }
 
@@ -54,6 +57,9 @@ void ShipWidgetController::removeShipPressed()
     }
     widgets_.add->setEnabled(true);
     Q_EMIT shipRemoved(name_);
+
+    QSettings settings;
+    settings.setValue(name_ + "_count",  widgets_.count->intValue());
   }
 }
 
