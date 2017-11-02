@@ -1,10 +1,13 @@
 #include <ShipWidgetController.hpp>
 #include <ShipSpecEditorDialog.hpp>
+#include <sstream>
 #include <QDebug>
 
 ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& name,
   int maxShips, QWidget* parent) : QObject(parent), widgets_(widgets), name_(name),
-  maxShips_(maxShips), editor_(new ShipSpecEditorDialog(name, parent))
+  maxShips_(maxShips), editor_(new ShipSpecEditorDialog(name, parent)),
+  countSettingsKey_(name_ + "_count"),
+  specSettingsKey_(name_ + "_spec")
 {
   connect(widgets_.add, &QToolButton::clicked, this, &ShipWidgetController::addShipPressed);
   connect(widgets_.remove, &QToolButton::clicked, this, &ShipWidgetController::removeShipPressed);
@@ -13,7 +16,7 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
   widgets_.remove->setDisabled(true);
 
   editor_->hide();
-  editor_->readSpec();
+
   connect(editor_, &QDialog::accepted, this, &ShipWidgetController::specAccepted);
   connect(editor_, &QDialog::rejected, this, &ShipWidgetController::specRejected);
 
@@ -23,15 +26,14 @@ ShipWidgetController::ShipWidgetController(ShipWidgets widgets, const QString& n
 void ShipWidgetController::updateShipCount()
 {
   QSettings settings;
-  countSettingsKey_ = name_ + "_count";
-  if (settings.contains(settingsKey_))
+  if (settings.contains(countSettingsKey_))
   {
-    auto count = settings.value(settingsKey_).toInt();
+    auto count = settings.value(countSettingsKey_).toInt();
     for (int i = 0; i < count; ++i)
       addShipPressed();
   }
   else
-    settings.setValue(settingsKey_, 0);
+    settings.setValue(countSettingsKey_, 0);
 }
 
 void ShipWidgetController::setEnabled(bool enabled)
@@ -55,7 +57,7 @@ void ShipWidgetController::addShipPressed()
     Q_EMIT shipAdded(name_, spec_.initiative);
 
     QSettings settings;
-    settings.setValue(settingsKey_, widgets_.count->intValue());
+    settings.setValue(countSettingsKey_, widgets_.count->intValue());
   }
 }
 
@@ -73,7 +75,7 @@ void ShipWidgetController::removeShipPressed()
     Q_EMIT shipRemoved(name_);
 
     QSettings settings;
-    settings.setValue(settingsKey_, widgets_.count->intValue());
+    settings.setValue(countSettingsKey_, widgets_.count->intValue());
   }
 }
 
@@ -92,6 +94,8 @@ void ShipWidgetController::specAccepted()
   updateSpecLabel();
   if (oldInitiative != spec_.initiative)
     Q_EMIT initiativeChanged(name_, spec_.initiative);
+
+  writeSpec();
 }
 
 void ShipWidgetController::updateSpecLabel()
@@ -122,22 +126,49 @@ void ShipWidgetController::show()
   widgets_.box->show();
 }
 
+namespace
+{
+  QString specToString(const ShipSpec& spec)
+  {
+    std::ostringstream ostr;
+    ostr << spec;
+    return QString::fromStdString(ostr.str());
+  }
+
+  ShipSpec specFromString(const QString& str)
+  {
+    QRegExp expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,i(\\d+)\\)");
+    auto pos = expr.indexIn(str);
+    qDebug() << "specFromString matched:" << expr.capturedTexts();
+    return ShipSpec(
+      expr.cap(1).toInt(),
+      expr.cap(2).toInt(),
+      expr.cap(3).toInt(),
+      expr.cap(4).toInt(),
+      expr.cap(5).toInt(),
+      expr.cap(6).toInt(),
+      expr.cap(7).toInt()
+    );
+  }
+}
+
 void ShipWidgetController::readSpec()
 {
   QSettings settings;
-  if (settings.contains(settingsKey_))
+  if (settings.contains(specSettingsKey_))
   {
-    auto specStr = settings.value(settingsKey_).toString();
-    qDebug() << tr("Read setting for %0: %1").arg(settingsKey_).arg(specStr);
+    auto specStr = settings.value(specSettingsKey_).toString();
+    //qDebug() << tr("Read setting for %0: %1").arg(specSettingsKey_).arg(specStr);
+
+    editor_->setSpec(specFromString(specStr));
+    specAccepted();
   }
 }
 
 void ShipWidgetController::writeSpec()
 {
   QSettings settings;
-  std::ostringstream ostr;
-  ostr << displayedSpec_;
-  auto val = QString::fromStdString(ostr.str());
-  qDebug() << "Setting " << settingsKey_ << " to " << val;
-  settings.setValue(settingsKey_, val);
+  auto val = specToString(spec_);
+  //qDebug() << "Setting " << specSettingsKey_ << " to " << val;
+  settings.setValue(specSettingsKey_, val);
 }
