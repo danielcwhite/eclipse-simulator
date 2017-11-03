@@ -90,6 +90,7 @@ void DamageApplier::operator()(ShipPtr target)
   }
 }
 
+/*
 Battle::Battle(const AttackingFleet& attacker, const DefendingFleet& defender, Logger l) : HasLogger(l)
 {
   if (attacker.ships().empty() || defender.ships().empty())
@@ -171,7 +172,8 @@ bool Battle::battleComplete()
   }
   return false;
 }
-
+*/
+/*
 void BattleHelper::simulateBattle(AttackingFleet& attacker, DefendingFleet& defender, int trials)
 {
   std::map<std::string, int> results;
@@ -189,3 +191,4 @@ void BattleHelper::simulateBattle(AttackingFleet& attacker, DefendingFleet& defe
     log(result.first, " won ", result.second, " times.");
   }
 }
+*/

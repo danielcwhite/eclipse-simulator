@@ -228,6 +228,7 @@ private:
   AttackRoll roll_;
 };
 
+/*
 class Battle : public HasLogger
 {
 public:
@@ -241,7 +242,7 @@ private:
 
   bool battleComplete();
 };
-
+*/
 
 }
 #endif
