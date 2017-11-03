@@ -6,7 +6,6 @@
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QtWidgets>
-#include <Simulation.hpp>
 #include <BattleStateMachine.hpp>
 
 EclipseMainWindow::EclipseMainWindow()
@@ -105,6 +104,16 @@ EclipseMainWindow::EclipseMainWindow()
   finishPushButton_->setEnabled(false);
 }
 
+
+class GuiShipFactory : public ShipFactory
+{
+public:
+  ShipPtr make(const Simulation::FightingShip& ship) const override
+  {
+    return std::make_shared<GuiShip>(ship);
+  }
+};
+
 void EclipseMainWindow::startBattle()
 {
   startPushButton_->setEnabled(false);
@@ -118,9 +127,7 @@ void EclipseMainWindow::startBattle()
       swc->hide();
   }
 
-
   log("Start battle.\n");
-
 
   using namespace Simulation;
   using namespace StateMachine;
@@ -134,7 +141,8 @@ void EclipseMainWindow::startBattle()
     else
       defender.addNewShip(ship->spec(), ship->activeCount());
   }
-  battle_ = std::make_shared<Battle2>(attacker, defender, nullptr,
+  static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>();
+  battle_ = std::make_shared<Battle2>(attacker, defender, factory,
     [this](const std::string& str) { log(QString::fromStdString(str)); });
 }
 

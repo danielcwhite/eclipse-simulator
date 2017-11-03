@@ -139,7 +139,7 @@ namespace
   {
     QRegExp expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,i(\\d+)\\)");
     auto pos = expr.indexIn(str);
-    qDebug() << "specFromString matched:" << expr.capturedTexts();
+    //qDebug() << "specFromString matched:" << expr.capturedTexts();
     return ShipSpec(
       expr.cap(1).toInt(),
       expr.cap(2).toInt(),

@@ -24,15 +24,6 @@ namespace StateMachine
     virtual std::shared_ptr<BattleState> update(Battle2& battle) = 0;
   };
 
-  class ShipFactory
-  {
-  public:
-    virtual ~ShipFactory() {}
-    virtual ShipPtr make(const Simulation::FightingShip& ship) const = 0;
-  };
-
-  using ShipFactoryPtr = std::shared_ptr<ShipFactory>;
-
   class Battle2 : public Simulation::HasLogger
   {
   public:

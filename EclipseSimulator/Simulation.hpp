@@ -22,6 +22,7 @@ public:
   virtual bool isAlive() const = 0;
   virtual void applyDamage(int amount) = 0;
   virtual ShipSpec spec() const = 0;
+  virtual std::string describe() const = 0;
 };
 
 using ShipPtr = std::shared_ptr<ShipInterface>;
@@ -245,4 +246,14 @@ private:
 */
 
 }
+
+class ShipFactory
+{
+public:
+  virtual ~ShipFactory() {}
+  virtual ShipPtr make(const Simulation::FightingShip& ship) const = 0;
+};
+
+using ShipFactoryPtr = std::shared_ptr<ShipFactory>;
+
 #endif

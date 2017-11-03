@@ -63,7 +63,7 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
 DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l) : HasLogger(l), attacker_(attacker)
 {
   roll_ = attack(attacker->spec());
-  log(attacker, "\nrolls: \t", roll_);
+  log(attacker->describe(), "\nrolls: \t", roll_);
 }
 
 void DamageApplier::operator()(ShipPtr target)
@@ -72,19 +72,19 @@ void DamageApplier::operator()(ShipPtr target)
   {
     auto result = resultOfAttack(attacker_->spec(), roll_, target->spec());
 
-    //TODO: incorporate orange and red guns here
+    //TODO: incorporate orange and red guns here--also abstract applying damage/using up dice 
     for (auto i = 0; i < result.yellowDice.size(); ++i)
     {
       if (result.yellowDice[i] && target->isAlive())
       {
-        log("\t hits: ", target);
+        log("\t hits: ", target->describe());
         target->applyDamage(1);
-        log("Target status is now ", target);
+        log("Target status is now ", target->describe());
         roll_.yellowDice[i] = 1;
       }
       else
       {
-        log("\t misses: ", target);
+        log("\t misses: ", target->describe());
       }
     }
   }

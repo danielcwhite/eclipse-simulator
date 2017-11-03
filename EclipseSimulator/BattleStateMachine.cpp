@@ -31,7 +31,7 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
   auto i = 1;
   for (const auto& ship : allShips_)
   {
-    log(i++, "\t", ship->spec());
+    log(i++, "\t", ship->describe());
   }
   log();
 
@@ -81,7 +81,7 @@ std::shared_ptr<BattleState> ResetShipsState::update(Battle2& battle)
 void Battle2::setActiveAttacker()
 {
   activeAttacker_ = allShips_.front();
-  log("Active ship: ", activeAttacker_->spec());
+  log("Active ship: ", activeAttacker_->describe());
   allShips_.pop_front();
 }
 
