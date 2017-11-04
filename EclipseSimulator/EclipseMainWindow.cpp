@@ -143,7 +143,7 @@ void EclipseMainWindow::startBattle()
   }
   static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>();
   battle_ = std::make_shared<Battle2>(attacker, defender, factory,
-    [this](const std::string& str) { log(QString::fromStdString(str)); });
+    [this](const std::string& str) { log(QString::fromStdString(str)); std::cout << str; });
 }
 
 void EclipseMainWindow::incrementBattle()

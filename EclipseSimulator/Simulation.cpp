@@ -70,9 +70,19 @@ void DamageApplier::operator()(ShipPtr target)
 {
   if (attacker_->isFighting(*target))
   {
+    if (roll_.yellowDice.empty())
+    {
+      log("All dice applied or 1s, nothing to do");
+      return;
+    }
     auto result = resultOfAttack(attacker_->spec(), roll_, target->spec());
-
-    //TODO: incorporate orange and red guns here--also abstract applying damage/using up dice 
+    log("Result of roll against target: ", target->describe(), "\n", result);
+    if (!std::any_of(result.yellowDice.begin(), result.yellowDice.end(), [](bool b) { return b; }))
+    {
+      log("All misses, checking next ship!");
+      return;
+    }
+    //TODO: incorporate orange and red guns here--also abstract applying damage/using up dice
     for (auto i = 0; i < result.yellowDice.size(); ++i)
     {
       if (result.yellowDice[i] && target->isAlive())
@@ -82,11 +92,13 @@ void DamageApplier::operator()(ShipPtr target)
         log("Target status is now ", target->describe());
         roll_.yellowDice[i] = 1;
       }
-      else
-      {
-        log("\t misses: ", target->describe());
-      }
+      // else if (target->isAlive())
+      // {
+      //   log("\t misses: ", target->describe());
+      // }
     }
+    roll_.yellowDice.erase(std::remove(roll_.yellowDice.begin(), roll_.yellowDice.end(), 1),
+      roll_.yellowDice.end());
   }
 }
 
