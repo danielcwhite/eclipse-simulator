@@ -2,6 +2,7 @@
 #include <ShipSpecEditorDialog.hpp>
 #include <ShipGraphicsManager.hpp>
 #include <ShipWidgetController.hpp>
+#include <GuiShip.hpp>
 
 #include <QDebug>
 #include <QGraphicsItem>

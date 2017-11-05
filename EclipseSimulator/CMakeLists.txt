@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.7)
 FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
 FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
 FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
-#FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
 #FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
 #FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
 
@@ -16,7 +15,7 @@ IF(Qt5Core_FOUND)
   ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
   ADD_DEFINITIONS(${Qt5Gui_DEFINITIONS})
 ELSE()
-  MESSAGE(FATAL_ERROR "Qt5 is required for building the SCIRun GUI")
+  MESSAGE(FATAL_ERROR "Qt5 is required for building the Eclipse GUI")
 ENDIF()
 
 IF(Qt5Core_FOUND)
@@ -24,7 +23,7 @@ IF(Qt5Core_FOUND)
   #INCLUDE(${QT_USE_FILE})
   ADD_DEFINITIONS(${QT_DEFINITIONS})
 ELSE()
-  MESSAGE(FATAL_ERROR "QT 5.8 or greater is required to build SCIRun")
+  MESSAGE(FATAL_ERROR "QT 5.8 or greater is required to build Eclipse")
 ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
@@ -58,6 +57,7 @@ SET(EclipseSimulatorGUI_HEADERS_TO_MOC
   ShipGraphicsManager.hpp
   ShipSpecEditorDialog.hpp
   ShipWidgetController.hpp
+  GuiShip.hpp
 )
 
 SET(EclipseSimulatorGUI_FORMS

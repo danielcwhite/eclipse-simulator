@@ -97,7 +97,8 @@ bool Battle2::roundComplete() const
   if (complete)
     log("round is complete.");
   else
-    log("#ships still left to fire: ", allShips_.size() - firedShips_.size());
+    log("#ships still left to fire: ", allShips_.size() - firedShips_.size(), ",",
+      allShips_.size(), ",", firedShips_.size());
   return complete;
 }
 
@@ -106,6 +107,7 @@ void Battle2::cleanupDeadShips()
   auto deadShipCleanup = [](const ShipPtr& ship) { return !ship->isAlive(); };
   auto count = allShips_.size();
   allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
+  firedShips_.erase(std::remove_if(firedShips_.begin(), firedShips_.end(), deadShipCleanup), firedShips_.end());
   auto removed = count - allShips_.size();
   log("Removed ", removed, " dead ships.");
 
