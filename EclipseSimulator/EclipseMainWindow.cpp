@@ -112,9 +112,10 @@ class GuiShipFactory : public ShipFactory
 public:
   explicit GuiShipFactory(ShipGraphicsManager* sgm) : sgm_(sgm) {}
 
-  ShipPtr make(const std::tuple<Simulation::FightingShip, std::string>& namedShip) const override
+  ShipPtr make(const std::tuple<Simulation::FightingShip, std::string, int>& namedShip) const override
   {
-    auto guiShip = std::make_shared<GuiShip>(std::get<0>(namedShip), std::get<1>(namedShip));
+    auto guiShip = std::make_shared<GuiShip>(std::get<0>(namedShip),
+      std::get<1>(namedShip), std::get<2>(namedShip));
     guiShip->setGuiImpl(std::make_shared<GuiShipImpl>(sgm_));
 
     return guiShip;

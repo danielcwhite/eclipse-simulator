@@ -10,7 +10,7 @@ class GuiShipImpl
 {
 public:
   explicit GuiShipImpl(ShipGraphicsManager* sgm);
-  void setActive(bool active, const QString& desc);
+  void setActive(bool active, const QString& name, int index, const QString& desc);
 private:
   ShipGraphicsManager* sgm_;
 };
@@ -18,11 +18,12 @@ private:
 class GuiShip : public ShipInterface
 {
 public:
-  GuiShip(const Simulation::FightingShip& ship, const std::string& name) :
-    impl_(ship), name_(name) {}
+  GuiShip(const Simulation::FightingShip& ship, const std::string& name, int index) :
+    impl_(ship), name_(name), index_(index) {}
   void setGuiImpl(std::shared_ptr<GuiShipImpl> gsi);
 
   std::string name() const override;
+  int index() const override;
   bool isAttacker() const override;
   bool isFighting(const ShipInterface& other) const override;
   bool isAlive() const override;
@@ -34,6 +35,7 @@ public:
 private:
   Simulation::FightingShip impl_;
   std::string name_;
+  int index_;
   std::shared_ptr<GuiShipImpl> guiImpl_;
   QString qDescribe() const { return QString::fromStdString(describe()); }
 };

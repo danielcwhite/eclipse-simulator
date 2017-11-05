@@ -1,12 +1,12 @@
 #include <GuiShip.hpp>
 #include <QDebug>
-
+#include <ShipGraphicsManager.hpp>
 
 GuiShipImpl::GuiShipImpl(ShipGraphicsManager* sgm) : sgm_(sgm) {}
 
-void GuiShipImpl::setActive(bool active, const QString& desc)
+void GuiShipImpl::setActive(bool active, const QString& name, int index, const QString& desc)
 {
-  qDebug() << "* * * * * " << __PRETTY_FUNCTION__ << active << desc;
+  sgm_->setShipToActive(active, name, index, desc);
 }
 
 void GuiShip::setGuiImpl(std::shared_ptr<GuiShipImpl> gsi)
@@ -17,6 +17,11 @@ void GuiShip::setGuiImpl(std::shared_ptr<GuiShipImpl> gsi)
 std::string GuiShip::name() const
 {
   return name_;
+}
+
+int GuiShip::index() const
+{
+  return index_;
 }
 
 bool GuiShip::isAttacker() const
@@ -59,5 +64,5 @@ bool GuiShip::lessThan(const ShipInterface& rhs) const
 void GuiShip::setActive(bool active)
 {
   if (guiImpl_)
-    guiImpl_->setActive(active, QString::fromStdString(name()) + "-->" + qDescribe());
+    guiImpl_->setActive(active, QString::fromStdString(name()), index(), qDescribe());
 }

@@ -8,6 +8,7 @@ class ShipInterface
 public:
   virtual ~ShipInterface() {}
   virtual std::string name() const = 0;
+  virtual int index() const = 0;
   virtual bool isAttacker() const = 0;
   virtual bool isFighting(const ShipInterface& other) const = 0;
   virtual bool isAlive() const = 0;

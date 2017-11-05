@@ -117,7 +117,7 @@ void ShipGraphicsManager::reorderShips()
 
 void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 {
-  QPen outlinePen(Qt::white);
+  QPen outlinePen(Qt::darkGreen);
   outlinePen.setWidth(2);
 
   auto i = 0;
@@ -151,8 +151,8 @@ void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 {
   names_ = names;
-  QPen outlinePen(Qt::yellow);
-  outlinePen.setWidth(4);
+  QPen outlinePen(Qt::darkGreen);
+  outlinePen.setWidth(2);
 
   auto i = 0;
   for (const auto& name : names)
@@ -174,7 +174,23 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
   }
 }
 
-void ShipGraphicsManager::shipSetToActive(bool active, const QString& desc)
+void ShipGraphicsManager::setShipToActive(bool active, const QString& name, int index, const QString& desc)
 {
-  qDebug() << "\t\t~~~~~~~~~~~" << __FUNCTION__ << active << desc;
+  //qDebug() << "\t\t~~~~~~~~~~~" << __FUNCTION__ << active << name << index << desc;
+  QColor color = active ? Qt::white : Qt::darkGreen;
+  QPen outlinePen(color);
+  outlinePen.setWidth(active ? 4 : 2);
+  for (auto& d : descriptionRects_)
+  {
+    if (d.name == name)
+    {
+      d.item->setPen(outlinePen);
+      break;
+    }
+  }
+  auto iter = rectItems_.find(name);
+  if (iter != rectItems_.end())
+  {
+    iter->second[index].item->setPen(outlinePen);
+  }
 }

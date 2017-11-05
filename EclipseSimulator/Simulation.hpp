@@ -137,7 +137,7 @@ class FleetSpec
 {
 public:
 
-  using NamedFightingShip = std::tuple<ShipType, std::string>;
+  using NamedFightingShip = std::tuple<ShipType, std::string, int>;
   using ShipList = std::vector<NamedFightingShip>;
 
   FleetSpec(const std::string& name, std::initializer_list<ShipSpec> ships) : name_(name)
@@ -149,7 +149,7 @@ public:
   void addNewShip(const std::string& name, const ShipSpec& ship, int count)
   {
     for (int i = 0; i < count; ++i)
-      ships_.emplace_back(ship, name);
+      ships_.emplace_back(ship, name, i);
   }
 
   const ShipList& ships() const { return ships_; }
@@ -251,7 +251,7 @@ class ShipFactory
 {
 public:
   virtual ~ShipFactory() {}
-  virtual ShipPtr make(const std::tuple<Simulation::FightingShip, std::string>& namedShip) const = 0;
+  virtual ShipPtr make(const std::tuple<Simulation::FightingShip, std::string, int>& namedShip) const = 0;
 };
 
 using ShipFactoryPtr = std::shared_ptr<ShipFactory>;
