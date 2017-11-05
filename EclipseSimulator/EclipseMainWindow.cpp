@@ -109,10 +109,20 @@ EclipseMainWindow::EclipseMainWindow()
 class GuiShipFactory : public ShipFactory
 {
 public:
+  explicit GuiShipFactory(ShipGraphicsManager* sgm) : sgm_(sgm) {}
+
   ShipPtr make(const Simulation::FightingShip& ship) const override
   {
-    return std::make_shared<GuiShip>(ship);
+    auto guiShip = std::make_shared<GuiShip>(ship);
+
+    qDebug() << "making connection";
+    QObject::connect(guiShip.get(), &GuiShip::damageApplied, sgm_, &ShipGraphicsManager::shipSetToActive);
+
+
+    return guiShip;
   }
+private:
+  ShipGraphicsManager* sgm_;
 };
 
 void EclipseMainWindow::startBattle()
@@ -142,7 +152,7 @@ void EclipseMainWindow::startBattle()
     else
       defender.addNewShip(ship->spec(), ship->activeCount());
   }
-  static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>();
+  static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(shipGraphics_);
   battle_ = std::make_shared<Battle2>(attacker, defender, factory,
     [this](const std::string& str) { log(QString::fromStdString(str)); std::cout << str; });
 }

@@ -173,3 +173,8 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     i++;
   }
 }
+
+void ShipGraphicsManager::shipSetToActive(bool active, const QString& desc)
+{
+  qDebug() << __FUNCTION__ << active << desc;
+}

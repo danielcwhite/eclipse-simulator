@@ -17,6 +17,7 @@ public Q_SLOTS:
   void removeShipRect(const QString& name);
   void adjustInitiative(const QString& name, int newInitiative);
   void reorderShips();
+  void shipSetToActive(bool active, const QString& desc);
 private:
   QGraphicsScene* scene_;
   struct ShipRect

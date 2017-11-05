@@ -3,6 +3,7 @@
 
 #include <Simulation.hpp>
 #include <QObject>
+#include <QDebug>
 
 class GuiShip : public QObject, public ShipInterface
 {
@@ -28,6 +29,7 @@ public:
   void applyDamage(int amount) override
   {
     impl_.applyDamage(amount);
+    Q_EMIT damageApplied(amount, qDescribe());
   }
 
   ShipSpec spec() const override
@@ -41,9 +43,24 @@ public:
     ostr << impl_;
     return ostr.str();
   }
+
+  bool lessThan(const ShipInterface& rhs) const override
+  {
+   return impl_ < static_cast<const GuiShip&>(rhs).impl_;
+  }
+
+  void setActive(bool active) override
+  {
+    qDebug() << __PRETTY_FUNCTION__;
+    Q_EMIT activeShipSet(active, qDescribe());
+  }
+
+Q_SIGNALS:
+  void damageApplied(int damage, const QString& desc);
+  void activeShipSet(bool active, const QString& desc);
 private:
   Simulation::FightingShip impl_;
-  // todo: signals
+  QString qDescribe() const { return QString::fromStdString(describe()); }
 };
 
 
