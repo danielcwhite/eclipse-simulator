@@ -18,6 +18,7 @@ public Q_SLOTS:
   void adjustInitiative(const QString& name, int newInitiative);
   void reorderShips();
   void setShipToActive(bool active, const QString& name, int index, const QString& desc);
+  void applyDamage(int amount, const QString& name, int index);
 private:
   QGraphicsScene* scene_;
   struct ShipRect

@@ -11,6 +11,7 @@ class GuiShipImpl
 public:
   explicit GuiShipImpl(ShipGraphicsManager* sgm);
   void setActive(bool active, const QString& name, int index, const QString& desc);
+  void applyDamage(int amount, const QString& name, int index);
 private:
   ShipGraphicsManager* sgm_;
 };
@@ -37,6 +38,7 @@ private:
   std::string name_;
   int index_;
   std::shared_ptr<GuiShipImpl> guiImpl_;
+  QString qName() const { return QString::fromStdString(name_); }
   QString qDescribe() const { return QString::fromStdString(describe()); }
 };
 

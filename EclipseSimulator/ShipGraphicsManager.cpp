@@ -194,3 +194,16 @@ void ShipGraphicsManager::setShipToActive(bool active, const QString& name, int 
     iter->second[index].item->setPen(outlinePen);
   }
 }
+
+void ShipGraphicsManager::applyDamage(int amount, const QString& name, int index)
+{
+  auto iter = rectItems_.find(name);
+  if (iter != rectItems_.end())
+  {
+    auto rect = iter->second[index].item->boundingRect();
+    auto pos = iter->second[index].item->pos();
+    qDebug() << "need to add " << amount << " purple dots inside " << rect << "at" << pos;
+    auto dot = scene_->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
+    dot->setPos(pos);
+  }
+}

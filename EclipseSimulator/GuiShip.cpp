@@ -9,6 +9,11 @@ void GuiShipImpl::setActive(bool active, const QString& name, int index, const Q
   sgm_->setShipToActive(active, name, index, desc);
 }
 
+void GuiShipImpl::applyDamage(int amount, const QString& name, int index)
+{
+  sgm_->applyDamage(amount, name, index);
+}
+
 void GuiShip::setGuiImpl(std::shared_ptr<GuiShipImpl> gsi)
 {
   guiImpl_ = gsi;
@@ -42,6 +47,8 @@ bool GuiShip::isAlive() const
 void GuiShip::applyDamage(int amount)
 {
   impl_.applyDamage(amount);
+  if (guiImpl_)
+    guiImpl_->applyDamage(amount, qName(), index());
 }
 
 ShipSpec GuiShip::spec() const
