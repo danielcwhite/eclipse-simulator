@@ -4,6 +4,7 @@
 #include <ShipWidgetController.hpp>
 #include <GuiShip.hpp>
 
+#include <memory>
 #include <QDebug>
 #include <QGraphicsItem>
 #include <QtWidgets>
@@ -114,10 +115,7 @@ public:
   ShipPtr make(const Simulation::FightingShip& ship) const override
   {
     auto guiShip = std::make_shared<GuiShip>(ship);
-
-    qDebug() << "making connection";
-    QObject::connect(guiShip.get(), &GuiShip::damageApplied, sgm_, &ShipGraphicsManager::shipSetToActive);
-
+    guiShip->setGuiImpl(std::make_shared<GuiShipImpl>(sgm_));
 
     return guiShip;
   }

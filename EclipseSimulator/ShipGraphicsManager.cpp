@@ -176,5 +176,5 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 
 void ShipGraphicsManager::shipSetToActive(bool active, const QString& desc)
 {
-  qDebug() << __FUNCTION__ << active << desc;
+  qDebug() << "\t\t~~~~~~~~~~~" << __FUNCTION__ << active << desc;
 }
