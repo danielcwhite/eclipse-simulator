@@ -52,6 +52,7 @@ SET(EclipseSimulatorGUI_HEADERS
   Simulation.hpp
   BattleStateMachine.hpp
   GuiShip.hpp
+  ShipInterface.hpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS_TO_MOC

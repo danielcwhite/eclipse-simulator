@@ -28,16 +28,18 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
     log("No battle--empty side.");
     return;
   }
-  auto func = [factory](const FightingShip& ship) { return factory->make(ship); };
-  std::transform(defender.ships().begin(), defender.ships().end(), std::back_inserter(allShips_), func);
-  std::transform(attacker.ships().begin(), attacker.ships().end(), std::back_inserter(allShips_), func);
+
+  for (const auto& def : defender.ships())
+    allShips_.push_back(factory->make(def));
+  for (const auto& atk : attacker.ships())
+    allShips_.push_back(factory->make(atk));
   std::sort(allShips_.begin(), allShips_.end(), PtrSort<ShipInterface>());
 
   log("Battle with these sorted ships:");
   auto i = 1;
   for (const auto& ship : allShips_)
   {
-    log(i++, "\t", ship->describe());
+    log(i++, "\t", ship->name(), "\t", ship->describe());
   }
   log();
 

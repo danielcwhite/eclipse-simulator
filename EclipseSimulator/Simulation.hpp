@@ -11,24 +11,8 @@
 #include <algorithm>
 #include <sstream>
 #include <memory>
-#include "ShipSpec.hpp"
-
-class ShipInterface
-{
-public:
-  virtual ~ShipInterface() {}
-  virtual bool isAttacker() const = 0;
-  virtual bool isFighting(const ShipInterface& other) const = 0;
-  virtual bool isAlive() const = 0;
-  virtual void applyDamage(int amount) = 0;
-  virtual ShipSpec spec() const = 0;
-  virtual std::string describe() const = 0;
-  virtual bool lessThan(const ShipInterface& rhs) const = 0;
-
-  virtual void setActive(bool active) = 0;
-};
-
-using ShipPtr = std::shared_ptr<ShipInterface>;
+#include <ShipSpec.hpp>
+#include <ShipInterface.hpp>
 
 namespace Simulation
 {
@@ -94,35 +78,45 @@ inline bool operator<(const Ship& a, const Ship& b)
   return AttackOrder()(a, b);
 }
 
-struct FightingShip : std::tuple<Ship, bool>
+struct FightingShip
 {
   FightingShip(const ShipSpec& ship, bool isAttacker) :
-    std::tuple<Ship, bool>(ship, isAttacker) {}
-  const ShipSpec& spec() const { return std::get<0>(*this).spec; }
+    ship_(ship), isAttacker_(isAttacker) {}
+  const ShipSpec& spec() const { return ship_.spec; }
+  const Ship& ship() const { return ship_; }
   bool isFighting(const FightingShip& other) const
   {
-    return std::get<1>(*this) != std::get<1>(other);
+    return isAttacker_ != other.isAttacker_;
   }
   void applyDamage(int damage)
   {
-    std::get<0>(*this).hitPoints -= damage;
+    ship_.hitPoints -= damage;
   }
   bool isAlive() const
   {
-    return std::get<0>(*this).hitPoints > 0;
+    return ship_.hitPoints > 0;
   }
-  bool isAttacker() const { return std::get<1>(*this); }
+  bool isAttacker() const { return isAttacker_; }
+private:
+  Ship ship_;
+  bool isAttacker_;
 };
+
+inline bool operator<(const FightingShip& lhs, const FightingShip& rhs)
+{
+  return std::make_tuple(lhs.ship(), lhs.isAttacker()) <
+    std::make_tuple(rhs.ship(), rhs.isAttacker());
+}
 
 // Defender < Attacker ==> Def = 0/false, Atk = 1/true
 struct Attacker : FightingShip
 {
-  explicit Attacker(const ShipSpec& ship) : FightingShip(ship, true) {}
+  explicit Attacker(const ShipSpec& spec) : FightingShip(spec, true) {}
 };
 
 struct Defender : FightingShip
 {
-  explicit Defender(const ShipSpec& ship) : FightingShip(ship, false) {}
+  explicit Defender(const ShipSpec& spec) : FightingShip(spec, false) {}
 };
 
 inline std::ostream& operator<<(std::ostream& o, const Ship& ship)
@@ -133,26 +127,29 @@ inline std::ostream& operator<<(std::ostream& o, const Ship& ship)
 
 inline std::ostream& operator<<(std::ostream& o, const FightingShip& fs)
 {
-  return o << (std::get<1>(fs) ? "ATK: " : "DEF: ") << std::get<0>(fs);
+  return o << (fs.isAttacker() ? "ATK: " : "DEF: ") << fs.ship();
 }
+
+
 
 template <class ShipType>
 class FleetSpec
 {
 public:
 
-  using ShipList = std::vector<ShipType>;
+  using NamedFightingShip = std::tuple<ShipType, std::string>;
+  using ShipList = std::vector<NamedFightingShip>;
 
   FleetSpec(const std::string& name, std::initializer_list<ShipSpec> ships) : name_(name)
   {
     for (const auto& ship : ships)
-      addNewShip(ship, 1);
+      addNewShip("<unknown>", ship, 1);
   }
 
-  void addNewShip(const ShipSpec& ship, int count)
+  void addNewShip(const std::string& name, const ShipSpec& ship, int count)
   {
     for (int i = 0; i < count; ++i)
-      ships_.emplace_back(ship);
+      ships_.emplace_back(ship, name);
   }
 
   const ShipList& ships() const { return ships_; }
@@ -254,7 +251,7 @@ class ShipFactory
 {
 public:
   virtual ~ShipFactory() {}
-  virtual ShipPtr make(const Simulation::FightingShip& ship) const = 0;
+  virtual ShipPtr make(const std::tuple<Simulation::FightingShip, std::string>& namedShip) const = 0;
 };
 
 using ShipFactoryPtr = std::shared_ptr<ShipFactory>;

@@ -112,9 +112,9 @@ class GuiShipFactory : public ShipFactory
 public:
   explicit GuiShipFactory(ShipGraphicsManager* sgm) : sgm_(sgm) {}
 
-  ShipPtr make(const Simulation::FightingShip& ship) const override
+  ShipPtr make(const std::tuple<Simulation::FightingShip, std::string>& namedShip) const override
   {
-    auto guiShip = std::make_shared<GuiShip>(ship);
+    auto guiShip = std::make_shared<GuiShip>(std::get<0>(namedShip), std::get<1>(namedShip));
     guiShip->setGuiImpl(std::make_shared<GuiShipImpl>(sgm_));
 
     return guiShip;
@@ -146,9 +146,9 @@ void EclipseMainWindow::startBattle()
   for (const auto& ship : ships_)
   {
     if (ship->isAttacker())
-      attacker.addNewShip(ship->spec(), ship->activeCount());
+      attacker.addNewShip(ship->name().toStdString(), ship->spec(), ship->activeCount());
     else
-      defender.addNewShip(ship->spec(), ship->activeCount());
+      defender.addNewShip(ship->name().toStdString(), ship->spec(), ship->activeCount());
   }
   static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(shipGraphics_);
   battle_ = std::make_shared<Battle2>(attacker, defender, factory,

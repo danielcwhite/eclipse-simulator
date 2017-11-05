@@ -14,6 +14,11 @@ void GuiShip::setGuiImpl(std::shared_ptr<GuiShipImpl> gsi)
   guiImpl_ = gsi;
 }
 
+std::string GuiShip::name() const
+{
+  return name_;
+}
+
 bool GuiShip::isAttacker() const
 {
   return impl_.isAttacker();
@@ -54,5 +59,5 @@ bool GuiShip::lessThan(const ShipInterface& rhs) const
 void GuiShip::setActive(bool active)
 {
   if (guiImpl_)
-    guiImpl_->setActive(active, qDescribe());
+    guiImpl_->setActive(active, QString::fromStdString(name()) + "-->" + qDescribe());
 }

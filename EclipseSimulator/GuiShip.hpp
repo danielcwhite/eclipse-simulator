@@ -18,8 +18,11 @@ private:
 class GuiShip : public ShipInterface
 {
 public:
-  explicit GuiShip(const Simulation::FightingShip& ship) : impl_(ship) {}
+  GuiShip(const Simulation::FightingShip& ship, const std::string& name) :
+    impl_(ship), name_(name) {}
   void setGuiImpl(std::shared_ptr<GuiShipImpl> gsi);
+
+  std::string name() const override;
   bool isAttacker() const override;
   bool isFighting(const ShipInterface& other) const override;
   bool isAlive() const override;
@@ -30,6 +33,7 @@ public:
   void setActive(bool active) override;
 private:
   Simulation::FightingShip impl_;
+  std::string name_;
   std::shared_ptr<GuiShipImpl> guiImpl_;
   QString qDescribe() const { return QString::fromStdString(describe()); }
 };
