@@ -213,6 +213,23 @@ void ShipGraphicsItem::applyDamage(int amount)
     damageCubes_.push_back(dot);
     hits++;
   }
+  if (hits >= hitpoints_->text().toInt())
+  {
+    addDeathLines();
+  }
+}
+
+void ShipGraphicsItem::addDeathLines()
+{
+  auto rect = item->boundingRect();
+  QPen death(Qt::red);
+  death.setWidth(6);
+  deathLines_.push_back(item->scene()->addLine(rect.topLeft().x(), rect.topLeft().y(),
+    rect.bottomRight().x(), rect.bottomRight().y(), death));
+  deathLines_.push_back(item->scene()->addLine(rect.topRight().x(), rect.topRight().y(),
+    rect.bottomLeft().x(), rect.bottomLeft().y(), death));
+  deathLines_[0]->setPos(item->pos());
+  deathLines_[1]->setPos(item->pos());
 }
 
 void ShipGraphicsItem::clearDamage()
@@ -220,6 +237,10 @@ void ShipGraphicsItem::clearDamage()
   for (auto& d : damageCubes_)
     delete d;
   damageCubes_.clear();
+
+  for (auto& d : deathLines_)
+    delete d;
+  deathLines_.clear();
 }
 
 void ShipGraphicsManager::clearDamage()

@@ -34,6 +34,8 @@ public:
 private:
   std::vector<QGraphicsRectItem*> damageCubes_;
   QGraphicsSimpleTextItem* hitpoints_;
+  std::vector<QGraphicsLineItem*> deathLines_;
+  void addDeathLines();
 };
 
 class ShipGraphicsManager : public QObject
