@@ -28,6 +28,12 @@ public:
   }
 
   void applyDamage(int amount);
+  void clearDamage();
+  void setHitpoints(int hitpoints);
+  void clearHitpoints();
+private:
+  std::vector<QGraphicsRectItem*> damageCubes_;
+  QGraphicsSimpleTextItem* hitpoints_;
 };
 
 class ShipGraphicsManager : public QObject
@@ -37,6 +43,7 @@ public:
   explicit ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent = nullptr);
   void addShipBorders(const std::map<QString, int>& maxShips);
   void addShipDescriptions(const std::vector<QString>& names);
+  void setShipHitpoints(const std::map<QString, int>& shipHitpoints);
 public Q_SLOTS:
   void addShipRect(const QString& name, int initiative);
   void removeShipRect(const QString& name);
@@ -44,6 +51,7 @@ public Q_SLOTS:
   void reorderShips();
   void setShipToActive(bool active, const QString& name, int index, const QString& desc);
   void applyDamage(int amount, const QString& name, int index);
+  void clearDamage();
 private:
   QGraphicsScene* scene_;
 

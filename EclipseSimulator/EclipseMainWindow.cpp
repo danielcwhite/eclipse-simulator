@@ -154,6 +154,9 @@ void EclipseMainWindow::startBattle()
   static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(shipGraphics_);
   battle_ = std::make_shared<Battle2>(attacker, defender, factory,
     [this](const std::string& str) { log(QString::fromStdString(str)); std::cout << str; });
+
+  std::map<QString, int> hitpoints;
+  shipGraphics_->setShipHitpoints(hitpoints);
 }
 
 void EclipseMainWindow::incrementBattle()
@@ -180,6 +183,8 @@ void EclipseMainWindow::finishBattle()
     if (swc->activeCount() == 0)
       swc->show();
   }
+  shipGraphics_->clearDamage();
+  shipGraphics_->setShipHitpoints({});
 }
 
 void EclipseMainWindow::simulateBattle()

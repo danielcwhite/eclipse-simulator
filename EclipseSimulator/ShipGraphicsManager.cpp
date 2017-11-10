@@ -210,6 +210,66 @@ void ShipGraphicsItem::applyDamage(int amount)
   {
     auto dot = item->scene()->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
     dot->setPos(pos + QPoint((hits / 3) * 7 , (hits % 3) * 7));
+    damageCubes_.push_back(dot);
     hits++;
   }
+}
+
+void ShipGraphicsItem::clearDamage()
+{
+  for (auto& d : damageCubes_)
+    delete d;
+  damageCubes_.clear();
+}
+
+void ShipGraphicsManager::clearDamage()
+{
+  for (auto& row : rectItems_)
+  {
+    for (auto& ship : row.second)
+    {
+      if (!ship.type.isEmpty())
+        ship.clearDamage();
+    }
+  }
+}
+
+void ShipGraphicsManager::setShipHitpoints(const std::map<QString, int>& shipHitpoints)
+{
+  for (auto& row : rectItems_)
+  {
+    for (auto& ship : row.second)
+    {
+      if (!ship.type.isEmpty())
+        ship.clearHitpoints();
+    }
+  }
+
+  for (const auto& nameHp : shipHitpoints)
+  {
+    auto iter = rectItems_.find(nameHp.first);
+    if (iter != rectItems_.end())
+    {
+      for (auto& ship : iter->second)
+        ship.setHitpoints(nameHp.second);
+    }
+  }
+}
+
+void ShipGraphicsItem::setHitpoints(int amount)
+{
+  qDebug() << __FUNCTION__ << amount;
+  // auto rect = item->boundingRect();
+  // auto pos = item->pos();
+  // for (int i = 0; i < amount; ++i)
+  // {
+  //   auto dot = item->scene()->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
+  //   dot->setPos(pos + QPoint((hits / 3) * 7 , (hits % 3) * 7));
+  //   hits++;
+  // }
+}
+
+void ShipGraphicsItem::clearHitpoints()
+{
+  qDebug() << __FUNCTION__;
 }
