@@ -152,8 +152,15 @@ void EclipseMainWindow::startBattle()
       defender.addNewShip(ship->name().toStdString(), ship->spec(), ship->activeCount());
   }
   static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(shipGraphics_);
-  battle_ = std::make_shared<Battle2>(attacker, defender, factory,
-    [this](const std::string& str) { log(QString::fromStdString(str)); std::cout << str; });
+  auto verboseLog = [this](const std::string& str)
+  {
+    if (verboseMode)
+    {
+      log(QString::fromStdString(str));
+      std::cout << str;
+    }
+  };
+  battle_ = std::make_shared<Battle2>(attacker, defender, factory, verboseLog);
 
   std::map<QString, int> hitpoints;
   for (const auto& ship : ships_)
@@ -167,10 +174,10 @@ void EclipseMainWindow::incrementBattle()
 {
   if (battle_)
   {
-    log("--------------------------\n");
+    if (verboseMode)
+      log("--------------------------\n");
     auto result = battle_->update();
-    //log(tr("result of incrementBattle: %0\n").arg(result ? "ongoing" : "complete"));
-
+    
     nextPushButton_->setEnabled(result);
   }
 }

@@ -38,6 +38,7 @@ private:
   std::vector<ShipWidgetController*> ships_;
   ShipGraphicsManager* shipGraphics_;
   std::shared_ptr<StateMachine::Battle2> battle_;
+  bool verboseMode = false;
 };
 
 template <class T>
