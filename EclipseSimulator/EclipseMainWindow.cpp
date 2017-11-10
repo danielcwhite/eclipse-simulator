@@ -156,6 +156,10 @@ void EclipseMainWindow::startBattle()
     [this](const std::string& str) { log(QString::fromStdString(str)); std::cout << str; });
 
   std::map<QString, int> hitpoints;
+  for (const auto& ship : ships_)
+  {
+    hitpoints[ship->name()] = ship->spec().hull + 1;
+  }
   shipGraphics_->setShipHitpoints(hitpoints);
 }
 

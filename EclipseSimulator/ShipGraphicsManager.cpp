@@ -251,25 +251,23 @@ void ShipGraphicsManager::setShipHitpoints(const std::map<QString, int>& shipHit
     if (iter != rectItems_.end())
     {
       for (auto& ship : iter->second)
-        ship.setHitpoints(nameHp.second);
+        if (!ship.type.isEmpty())
+          ship.setHitpoints(nameHp.second);
     }
   }
 }
 
 void ShipGraphicsItem::setHitpoints(int amount)
 {
-  qDebug() << __FUNCTION__ << amount;
-  // auto rect = item->boundingRect();
-  // auto pos = item->pos();
-  // for (int i = 0; i < amount; ++i)
-  // {
-  //   auto dot = item->scene()->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
-  //   dot->setPos(pos + QPoint((hits / 3) * 7 , (hits % 3) * 7));
-  //   hits++;
-  // }
+  auto rect = item->boundingRect();
+  auto pos = item->pos();
+  hitpoints_ = item->scene()->addSimpleText(QString::number(amount));
+  hitpoints_->setPos(pos + QPoint(rect.width(), -10));
+  hitpoints_->setBrush(QColor(255,182,193)); //pink
 }
 
 void ShipGraphicsItem::clearHitpoints()
 {
-  qDebug() << __FUNCTION__;
+  delete hitpoints_;
+  hitpoints_ = nullptr;
 }
