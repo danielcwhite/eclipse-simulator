@@ -224,6 +224,7 @@ private:
   AttackRoll attack(const ShipSpec& ship);
   std::function<HitResult(const OneGunRoll&)> resultOfAttackPart(int computer, int shield);
   ResultOfRoll resultOfAttack(const ShipSpec& shooter, const AttackRoll& roll, const ShipSpec& target);
+  void applyDamagePerGun(OneGunRoll& oneGun, const HitResult& result, ShipPtr target, int damagePerHit);
 
   ShipPtr attacker_;
   AttackRoll roll_;

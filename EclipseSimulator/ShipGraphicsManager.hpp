@@ -54,12 +54,14 @@ public Q_SLOTS:
   void setShipToActive(bool active, const QString& name, int index, const QString& desc);
   void applyDamage(int amount, const QString& name, int index);
   void clearDamage();
+  void setMatch(const QString& fromName, int fromIndex, const QString& toName, int toIndex);
 private:
   QGraphicsScene* scene_;
 
   std::vector<QString> names_;
   std::map<QString, std::vector<ShipGraphicsItem>> rectItems_;
   std::vector<ShipGraphicsItem> descriptionRects_;
+  QGraphicsLineItem* attackLine_ {nullptr};
 };
 
 #endif

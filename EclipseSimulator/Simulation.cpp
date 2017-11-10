@@ -70,36 +70,40 @@ void DamageApplier::operator()(ShipPtr target)
 {
   if (attacker_->isFighting(*target))
   {
-    if (roll_.yellowDice.empty())
-    {
-      log("All dice applied or 1s, nothing to do");
-      return;
-    }
     auto result = resultOfAttack(attacker_->spec(), roll_, target->spec());
     log("Result of roll against target: ", target->describe(), "\n", result);
-    if (!std::any_of(result.yellowDice.begin(), result.yellowDice.end(), [](bool b) { return b; }))
-    {
-      log("All misses, checking next ship!");
-      return;
-    }
-    //TODO: incorporate orange and red guns here--also abstract applying damage/using up dice
-    for (auto i = 0; i < result.yellowDice.size(); ++i)
-    {
-      if (result.yellowDice[i] && target->isAlive())
-      {
-        log("\t hits: ", target->describe());
-        target->applyDamage(1);
-        log("Target status is now ", target->describe());
-        roll_.yellowDice[i] = 1;
-      }
-      // else if (target->isAlive())
-      // {
-      //   log("\t misses: ", target->describe());
-      // }
-    }
-    roll_.yellowDice.erase(std::remove(roll_.yellowDice.begin(), roll_.yellowDice.end(), 1),
-      roll_.yellowDice.end());
+    //TODO: beautify
+    applyDamagePerGun(roll_.yellowDice, result.yellowDice, target, 1);
+    applyDamagePerGun(roll_.orangeDice, result.orangeDice, target, 2);
+    applyDamagePerGun(roll_.redDice, result.redDice, target, 4);
   }
+}
+
+void DamageApplier::applyDamagePerGun(OneGunRoll& oneGun, const HitResult& result, ShipPtr target, int damagePerHit)
+{
+  if (oneGun.empty())
+  {
+    log("All dice applied or 1s, nothing to do");
+    return;
+  }
+
+  if (!std::any_of(result.begin(), result.end(), [](bool b) { return b; }))
+  {
+    log("All misses, checking next ship!");
+    return;
+  }
+  //TODO: incorporate orange and red guns here--also abstract applying damage/using up dice
+  for (auto i = 0; i < result.size(); ++i)
+  {
+    if (result[i] && target->isAlive())
+    {
+      log("\t hits: ", target->describe());
+      target->applyDamage(damagePerHit);
+      log("Target status is now ", target->describe());
+      oneGun[i] = 1;
+    }
+  }
+  oneGun.erase(std::remove(oneGun.begin(), oneGun.end(), 1), oneGun.end());
 }
 
 /*

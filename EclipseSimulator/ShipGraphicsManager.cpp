@@ -292,3 +292,21 @@ void ShipGraphicsItem::clearHitpoints()
   delete hitpoints_;
   hitpoints_ = nullptr;
 }
+
+void ShipGraphicsManager::setMatch(const QString& fromName, int fromIndex, const QString& toName, int toIndex)
+{
+  return;
+  #if 0
+  qDebug() << __FUNCTION__ << fromName << fromIndex << toName << toIndex;
+  auto& from = rectItems_[fromName][fromIndex];
+  auto& to = rectItems_[toName][toIndex];
+  auto fromPoint = from.item->pos() + QPoint(20,20);
+  auto toPoint = to.item->pos() + QPoint(20,20);
+
+  delete attackLine_;
+  QPen atk(Qt::red);
+  atk.setWidth(2);
+  attackLine_ = scene_->addLine(fromPoint.x(), fromPoint.y(), toPoint.x(), toPoint.y(), atk);
+  attackLine_->setPos(fromPoint);
+  #endif
+}

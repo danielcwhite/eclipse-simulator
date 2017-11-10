@@ -12,6 +12,7 @@ public:
   explicit GuiShipImpl(ShipGraphicsManager* sgm);
   void setActive(bool active, const QString& name, int index, const QString& desc);
   void applyDamage(int amount, const QString& name, int index);
+  void setMatch(const QString& fromName, int fromIndex, const QString& toName, int toIndex);
 private:
   ShipGraphicsManager* sgm_;
 };

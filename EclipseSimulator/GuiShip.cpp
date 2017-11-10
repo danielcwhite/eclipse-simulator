@@ -14,6 +14,11 @@ void GuiShipImpl::applyDamage(int amount, const QString& name, int index)
   sgm_->applyDamage(amount, name, index);
 }
 
+void GuiShipImpl::setMatch(const QString& fromName, int fromIndex, const QString& toName, int toIndex)
+{
+  sgm_->setMatch(fromName, fromIndex, toName, toIndex);
+}
+
 void GuiShip::setGuiImpl(std::shared_ptr<GuiShipImpl> gsi)
 {
   guiImpl_ = gsi;
@@ -36,7 +41,12 @@ bool GuiShip::isAttacker() const
 
 bool GuiShip::isFighting(const ShipInterface& other) const
 {
-  return impl_.isFighting(static_cast<const GuiShip&>(other).impl_);
+  const auto& otherShip = static_cast<const GuiShip&>(other);
+  const auto& otherImpl = otherShip.impl_;
+  auto match = impl_.isFighting(otherImpl);
+  if (match && guiImpl_)
+    guiImpl_->setMatch(qName(), index(), otherShip.qName(), otherShip.index());
+  return match;
 }
 
 bool GuiShip::isAlive() const
