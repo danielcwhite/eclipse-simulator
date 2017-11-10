@@ -167,16 +167,13 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto rectangle = scene_->addRect(0, 0, 3*w, h, outlinePen, QBrush(color, pattern));
     rectangle->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
 
-    ShipRect r(rectangle, name, shipType, isAttacker, 0);
-
-    descriptionRects_.push_back(r);
+    descriptionRects_.emplace_back(rectangle, name, shipType, isAttacker, 0);
     i++;
   }
 }
 
 void ShipGraphicsManager::setShipToActive(bool active, const QString& name, int index, const QString& desc)
 {
-  //qDebug() << "\t\t~~~~~~~~~~~" << __FUNCTION__ << active << name << index << desc;
   QColor color = active ? Qt::white : Qt::darkGreen;
   QPen outlinePen(color);
   outlinePen.setWidth(active ? 4 : 2);
@@ -200,10 +197,19 @@ void ShipGraphicsManager::applyDamage(int amount, const QString& name, int index
   auto iter = rectItems_.find(name);
   if (iter != rectItems_.end())
   {
-    auto rect = iter->second[index].item->boundingRect();
-    auto pos = iter->second[index].item->pos();
-    qDebug() << "need to add " << amount << " purple dots inside " << rect << "at" << pos;
-    auto dot = scene_->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
-    dot->setPos(pos);
+    auto& ship = iter->second[index];
+    ship.applyDamage(amount);
+  }
+}
+
+void ShipGraphicsItem::applyDamage(int amount)
+{
+  auto rect = item->boundingRect();
+  auto pos = item->pos();
+  for (int i = 0; i < amount; ++i)
+  {
+    auto dot = item->scene()->addRect(0, 0, 5, 5, QPen(), QColor(255,0,255));
+    dot->setPos(pos + QPoint((hits / 3) * 7 , (hits % 3) * 7));
+    hits++;
   }
 }

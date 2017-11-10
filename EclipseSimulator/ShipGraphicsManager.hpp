@@ -5,6 +5,31 @@
 #include <QGraphicsItem>
 #include <QtWidgets>
 
+class ShipGraphicsItem
+{
+public:
+  ShipGraphicsItem() {}
+  ShipGraphicsItem(QGraphicsRectItem* i, const QString& n, const QString& t, bool a, int o) :
+    item(i), name(n), type(t), isAttacker(a), initiative(o) {}
+
+  QGraphicsRectItem* item;
+  QString name, type;
+  bool isAttacker {false};
+  int initiative {0};
+  int hits {0};
+
+  bool operator<(const ShipGraphicsItem& other) const
+  {
+    if (initiative > other.initiative)
+      return true;
+    if (initiative == other.initiative)
+      return isAttacker < other.isAttacker;
+    return false;
+  }
+
+  void applyDamage(int amount);
+};
+
 class ShipGraphicsManager : public QObject
 {
   Q_OBJECT
@@ -21,30 +46,10 @@ public Q_SLOTS:
   void applyDamage(int amount, const QString& name, int index);
 private:
   QGraphicsScene* scene_;
-  struct ShipRect
-  {
-    ShipRect() {}
-    ShipRect(QGraphicsRectItem* i, const QString& n, const QString& t, bool a, int o) :
-      item(i), name(n), type(t), isAttacker(a), initiative(o) {}
-
-    QGraphicsRectItem* item;
-    QString name, type;
-    bool isAttacker {false};
-    int initiative {0};
-
-    bool operator<(const ShipRect& other) const
-    {
-      if (initiative > other.initiative)
-        return true;
-      if (initiative == other.initiative)
-        return isAttacker < other.isAttacker;
-      return false;
-    }
-  };
 
   std::vector<QString> names_;
-  std::map<QString, std::vector<ShipRect>> rectItems_;
-  std::vector<ShipRect> descriptionRects_;
+  std::map<QString, std::vector<ShipGraphicsItem>> rectItems_;
+  std::vector<ShipGraphicsItem> descriptionRects_;
 };
 
 #endif
