@@ -31,6 +31,7 @@ namespace StateMachine
       const Simulation::DefendingFleet& defender,
       ShipFactoryPtr factory,
       Simulation::Logger log);
+    ~Battle2();
 
     bool update();
 

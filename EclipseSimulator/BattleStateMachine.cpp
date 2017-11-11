@@ -47,6 +47,12 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
   state_ = std::make_shared<PickActiveAttackerState>();
 }
 
+Battle2::~Battle2()
+{
+  if (activeAttacker_)
+    activeAttacker_->setActive(false);
+}
+
 bool Battle2::update()
 {
   state_ = state_->update(*this);

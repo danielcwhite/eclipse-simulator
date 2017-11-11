@@ -177,7 +177,7 @@ void EclipseMainWindow::incrementBattle()
     if (verboseMode)
       log("--------------------------\n");
     auto result = battle_->update();
-    
+
     nextPushButton_->setEnabled(result);
   }
 }
@@ -196,6 +196,7 @@ void EclipseMainWindow::finishBattle()
   }
   shipGraphics_->clearDamage();
   shipGraphics_->setShipHitpoints({});
+  battle_.reset();
 }
 
 void EclipseMainWindow::simulateBattle()
