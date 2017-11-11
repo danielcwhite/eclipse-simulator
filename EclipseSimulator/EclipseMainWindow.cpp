@@ -160,7 +160,8 @@ void EclipseMainWindow::startBattle()
       std::cout << str;
     }
   };
-  battle_ = std::make_shared<Battle2>(attacker, defender, factory, verboseLog);
+  battle_ = std::make_shared<Battle2>(attacker, defender, factory, verboseLog,
+    [this](const AttackRoll& roll) { displayRoll(roll); });
 
   std::map<QString, int> hitpoints;
   for (const auto& ship : ships_)
@@ -168,6 +169,31 @@ void EclipseMainWindow::startBattle()
     hitpoints[ship->name()] = ship->spec().hull + 1;
   }
   shipGraphics_->setShipHitpoints(hitpoints);
+}
+
+void EclipseMainWindow::displayRoll(const Simulation::AttackRoll& roll)
+{
+  if (is_empty(roll))
+  {
+    rollLabel_->setText("");
+    return;
+  }
+  
+  std::ostringstream display;
+  display << "Last roll: ";
+  for (const auto& y : roll.yellowDice)
+  {
+    display << "<font color=yellow>" << y << ",</font>";
+  }
+  for (const auto& y : roll.orangeDice)
+  {
+    display << "<font color=orange>" << y << ",</font>";
+  }
+  for (const auto& y : roll.redDice)
+  {
+    display << "<font color=red>" << y << ",</font>";
+  }
+  rollLabel_->setText(QString::fromStdString(display.str()));
 }
 
 void EclipseMainWindow::incrementBattle()

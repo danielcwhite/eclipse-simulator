@@ -33,6 +33,7 @@ private Q_SLOTS:
 private:
   void setupBattleOrderView();
   void log(const QString& str);
+  void displayRoll(const Simulation::AttackRoll& roll);
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;

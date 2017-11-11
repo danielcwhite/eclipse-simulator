@@ -21,8 +21,8 @@ struct PtrSort
 
 Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
   ShipFactoryPtr factory,
-  Logger l)
-  : HasLogger(l)
+  Logger l, RollDisplayer rd)
+  : HasLogger(l), rollDisplayer_(rd)
 {
   if (attacker.ships().empty() || defender.ships().empty())
   {
@@ -99,11 +99,12 @@ void Battle2::setActiveAttacker()
   log("Active ship: ", activeAttacker_->toString());
   activeAttacker_->setActive(true);
   allShips_.pop_front();
+  rollDisplayer_({});
 }
 
 void Battle2::applyDamage()
 {
-  DamageApplier da(activeAttacker_, logger());
+  DamageApplier da(activeAttacker_, logger(), rollDisplayer_);
   AncientsDamageApplicationStrategy ancients; // todo: user input
   apply_damage(allShips_, da, ancients);
 }

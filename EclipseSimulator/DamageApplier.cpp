@@ -55,10 +55,12 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
   };
 }
 
-DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l) : HasLogger(l), attacker_(attacker)
+DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l, RollDisplayer rollDisplayer) :
+  HasLogger(l), attacker_(attacker), rollDisplayer_(rollDisplayer)
 {
   roll_ = attack(attacker->spec());
   log(attacker->toString(), " rolls: \t", roll_);
+  rollDisplayer_(roll_);
 }
 
 void DamageApplier::operator()(ShipPtr target)

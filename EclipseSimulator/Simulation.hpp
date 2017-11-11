@@ -47,6 +47,8 @@ bool is_empty(const GunRoll<T>& roll)
   return roll.yellowDice.empty() && roll.orangeDice.empty() && roll.redDice.empty();
 }
 
+using RollDisplayer = std::function<void(const AttackRoll&)>;
+
 template <typename T>
 std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
 {

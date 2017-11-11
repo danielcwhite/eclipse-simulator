@@ -9,7 +9,7 @@ namespace Simulation
 class DamageApplier : public HasLogger
 {
 public:
-  DamageApplier(const ShipPtr& attacker, Logger log);
+  DamageApplier(const ShipPtr& attacker, Logger log, RollDisplayer rollDisplayer);
   void operator()(ShipPtr target);
 
 private:
@@ -22,6 +22,7 @@ private:
 
   ShipPtr attacker_;
   AttackRoll roll_;
+  RollDisplayer rollDisplayer_;
 };
 
 class DamageApplicationStrategy

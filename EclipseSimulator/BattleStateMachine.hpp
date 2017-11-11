@@ -30,7 +30,9 @@ namespace StateMachine
     Battle2(const Simulation::AttackingFleet& attacker,
       const Simulation::DefendingFleet& defender,
       ShipFactoryPtr factory,
-      Simulation::Logger log);
+      Simulation::Logger log,
+      Simulation::RollDisplayer rollDisplayer
+    );
     ~Battle2();
 
     bool update();
@@ -51,6 +53,7 @@ namespace StateMachine
     std::deque<ShipPtr> allShips_, firedShips_;
     int roundCount_{0};
     std::string victorString_;
+    Simulation::RollDisplayer rollDisplayer_;
 
     bool battleComplete();
   };
