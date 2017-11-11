@@ -45,6 +45,7 @@ SET(EclipseSimulatorGUI_SOURCES
   Simulation.cpp
   BattleStateMachine.cpp
   GuiShip.cpp
+  DamageApplier.cpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS
@@ -53,6 +54,7 @@ SET(EclipseSimulatorGUI_HEADERS
   BattleStateMachine.hpp
   GuiShip.hpp
   ShipInterface.hpp
+  DamageApplier.hpp
 )
 
 SET(EclipseSimulatorGUI_HEADERS_TO_MOC

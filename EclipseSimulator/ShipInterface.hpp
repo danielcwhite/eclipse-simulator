@@ -24,4 +24,6 @@ public:
 
 using ShipPtr = std::shared_ptr<ShipInterface>;
 
+using ShipVector = std::deque<ShipPtr>;
+
 #endif

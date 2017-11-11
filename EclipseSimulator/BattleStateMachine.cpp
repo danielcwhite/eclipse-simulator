@@ -1,4 +1,5 @@
 #include <BattleStateMachine.hpp>
+#include <DamageApplier.hpp>
 
 using namespace StateMachine;
 using namespace Simulation;
@@ -39,7 +40,7 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
   auto i = 1;
   for (const auto& ship : allShips_)
   {
-    log(i++, "\t", ship->name(), "\t", ship->describe());
+    log(i++, "\t", ship->toString(), "\t", ship->describe());
   }
   log();
 
@@ -96,8 +97,8 @@ void Battle2::setActiveAttacker()
 
 void Battle2::applyDamage()
 {
-  DamageApplier applyDamage(activeAttacker_, logger());
-  std::for_each(allShips_.begin(), allShips_.end(), applyDamage);
+  DamageApplier da(activeAttacker_, logger());
+  apply_damage(allShips_, da);
 }
 
 bool Battle2::roundComplete() const
