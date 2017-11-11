@@ -98,7 +98,8 @@ void Battle2::setActiveAttacker()
 void Battle2::applyDamage()
 {
   DamageApplier da(activeAttacker_, logger());
-  apply_damage(allShips_, da);
+  AncientsDamageApplicationStrategy ancients; // todo: user input
+  apply_damage(allShips_, da, ancients);
 }
 
 bool Battle2::roundComplete() const

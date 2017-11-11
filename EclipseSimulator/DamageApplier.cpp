@@ -104,7 +104,30 @@ void DamageApplier::applyDamagePerGun(OneGunRoll& oneGun, const HitResult& resul
   oneGun.erase(std::remove(oneGun.begin(), oneGun.end(), 1), oneGun.end());
 }
 
-void Simulation::apply_damage(ShipVector ships, DamageApplier& da)
+void Simulation::apply_damage(ShipVector ships, DamageApplier& da, DamageApplicationStrategy& strategy)
 {
-  std::for_each(ships.begin(), ships.end(), da);
+  auto sorted = strategy.orderShips(ships);
+  std::for_each(sorted.begin(), sorted.end(), da);
+}
+
+ShipVector AncientsDamageApplicationStrategy::orderShips(const ShipVector& ships)
+{
+  auto copy(ships);
+  std::sort(copy.begin(), copy.end(), [](ShipPtr lhs, ShipPtr rhs)
+  {
+    if (lhs->spec().hull < rhs->spec().hull)
+      return true;
+    if (lhs->spec().hull > rhs->spec().hull)
+      return false;
+    if (lhs->name().find("Dreadnought") != std::string::npos)
+      return true;
+    if (rhs->name().find("Interceptor") != std::string::npos)
+      return true;
+    if (lhs->name().find("Interceptor") != std::string::npos)
+      return false;
+    if (rhs->name().find("Dreadnought") != std::string::npos)
+      return false;
+    return true;
+  });
+  return copy;
 }

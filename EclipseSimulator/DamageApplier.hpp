@@ -24,7 +24,6 @@ private:
   AttackRoll roll_;
 };
 
-
 class DamageApplicationStrategy
 {
 public:
@@ -32,7 +31,13 @@ public:
   virtual ShipVector orderShips(const ShipVector& ships) = 0;
 };
 
-void apply_damage(ShipVector ships, DamageApplier& da);
+void apply_damage(ShipVector ships, DamageApplier& da, DamageApplicationStrategy& strategy);
+
+class AncientsDamageApplicationStrategy : public DamageApplicationStrategy
+{
+public:
+  virtual ShipVector orderShips(const ShipVector& ships);
+};
 
 }
 
