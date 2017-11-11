@@ -89,7 +89,7 @@ std::shared_ptr<BattleState> ResetShipsState::update(Battle2& battle)
 void Battle2::setActiveAttacker()
 {
   activeAttacker_ = allShips_.front();
-  log("Active ship: ", activeAttacker_->describe());
+  log("Active ship: ", activeAttacker_->toString());
   activeAttacker_->setActive(true);
   allShips_.pop_front();
 }
@@ -113,7 +113,13 @@ bool Battle2::roundComplete() const
 
 void Battle2::cleanupDeadShips()
 {
-  auto deadShipCleanup = [](const ShipPtr& ship) { return !ship->isAlive(); };
+  auto deadShipCleanup = [](ShipPtr& ship)
+  {
+    auto isDead =  !ship->isAlive();
+    if (isDead)
+      ship->setAsDead();
+    return isDead;
+  };
   auto count = allShips_.size();
   allShips_.erase(std::remove_if(allShips_.begin(), allShips_.end(), deadShipCleanup), allShips_.end());
   firedShips_.erase(std::remove_if(firedShips_.begin(), firedShips_.end(), deadShipCleanup), firedShips_.end());

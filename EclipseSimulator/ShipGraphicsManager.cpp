@@ -213,9 +213,15 @@ void ShipGraphicsItem::applyDamage(int amount)
     damageCubes_.push_back(dot);
     hits++;
   }
-  if (hits >= hitpoints_->text().toInt())
+}
+
+void ShipGraphicsManager::setAsDead(const QString& name, int index)
+{
+  auto iter = rectItems_.find(name);
+  if (iter != rectItems_.end())
   {
-    addDeathLines();
+    auto& ship = iter->second[index];
+    ship.addDeathLines();
   }
 }
 

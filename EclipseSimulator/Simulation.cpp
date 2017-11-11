@@ -63,7 +63,7 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
 DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l) : HasLogger(l), attacker_(attacker)
 {
   roll_ = attack(attacker->spec());
-  log(attacker->describe(), "\nrolls: \t", roll_);
+  log(attacker->toString(), " rolls: \t", roll_);
 }
 
 void DamageApplier::operator()(ShipPtr target)
@@ -71,11 +71,14 @@ void DamageApplier::operator()(ShipPtr target)
   if (attacker_->isFighting(*target))
   {
     auto result = resultOfAttack(attacker_->spec(), roll_, target->spec());
-    log("Result of roll against target: ", target->describe(), "\n", result);
+    if (!is_empty(result))
+    {
+      log("Vs target: ", target->toString(), "\t", result);
     //TODO: beautify
-    applyDamagePerGun(roll_.yellowDice, result.yellowDice, target, 1);
-    applyDamagePerGun(roll_.orangeDice, result.orangeDice, target, 2);
-    applyDamagePerGun(roll_.redDice, result.redDice, target, 4);
+      applyDamagePerGun(roll_.yellowDice, result.yellowDice, target, 1);
+      applyDamagePerGun(roll_.orangeDice, result.orangeDice, target, 2);
+      applyDamagePerGun(roll_.redDice, result.redDice, target, 4);
+    }
   }
 }
 
@@ -83,7 +86,7 @@ void DamageApplier::applyDamagePerGun(OneGunRoll& oneGun, const HitResult& resul
 {
   if (oneGun.empty())
   {
-    log("All dice applied or 1s, nothing to do");
+    //log("All dice applied or 1s, nothing to do");
     return;
   }
 
@@ -97,7 +100,7 @@ void DamageApplier::applyDamagePerGun(OneGunRoll& oneGun, const HitResult& resul
   {
     if (result[i] && target->isAlive())
     {
-      log("\t hits: ", target->describe());
+      log("\t hits: ", target->toString());
       target->applyDamage(damagePerHit);
       log("Target status is now ", target->describe());
       oneGun[i] = 1;

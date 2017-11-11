@@ -42,6 +42,12 @@ using AttackRoll = GunRoll<int>;
 using ResultOfRoll = GunRoll<bool>;
 
 template <typename T>
+bool is_empty(const GunRoll<T>& roll)
+{
+  return roll.yellowDice.empty() && roll.orangeDice.empty() && roll.redDice.empty();
+}
+
+template <typename T>
 std::ostream& operator<<(std::ostream& o, const GunRoll<T>& g)
 {
   if (!g.yellowDice.empty())

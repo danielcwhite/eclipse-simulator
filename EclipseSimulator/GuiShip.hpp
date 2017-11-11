@@ -13,6 +13,7 @@ public:
   void setActive(bool active, const QString& name, int index, const QString& desc);
   void applyDamage(int amount, const QString& name, int index);
   void setMatch(const QString& fromName, int fromIndex, const QString& toName, int toIndex);
+  void setAsDead(const QString& name, int index);
 private:
   ShipGraphicsManager* sgm_;
 };
@@ -30,6 +31,7 @@ public:
   bool isFighting(const ShipInterface& other) const override;
   bool isAlive() const override;
   void applyDamage(int amount) override;
+  void setAsDead() override;
   ShipSpec spec() const override;
   std::string describe() const override;
   bool lessThan(const ShipInterface& rhs) const override;
