@@ -17,6 +17,7 @@ public Q_SLOTS:
   void presetSelected(const QString& name);
 private:
   ShipSpec displayedSpec_;
+  static QMap<QString, ShipSpec> presetSpecs_;
 };
 
 #endif
