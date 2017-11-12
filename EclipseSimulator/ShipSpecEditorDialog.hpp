@@ -14,6 +14,7 @@ public:
   void setSpec(const ShipSpec& spec);
 public Q_SLOTS:
   void editSpec(int newValue);
+  void presetSelected(const QString& name);
 private:
   ShipSpec displayedSpec_;
 };

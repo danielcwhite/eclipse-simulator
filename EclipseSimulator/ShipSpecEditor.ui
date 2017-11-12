@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>222</width>
-    <height>313</height>
+    <height>422</height>
    </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>222</width>
+    <height>422</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Edit Ship Spec</string>
@@ -114,6 +120,82 @@
        <widget class="QSpinBox" name="redGunSpinBox_"/>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Preset config:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="presetConfigComboBox_">
+     <item>
+      <property name="text">
+       <string>&lt;None&gt;</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Base Terran Interceptor</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Base Terran Cruiser</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Base Terran Dreadnought</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Base Terran Starbase</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Interceptor</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Galactic Civil Defense System</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Cruiser #1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Cruiser #2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Cruiser #3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Cruiser #4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Dreadnought #1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ancient Dreadnought #2</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>

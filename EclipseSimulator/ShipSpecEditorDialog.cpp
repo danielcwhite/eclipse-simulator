@@ -20,6 +20,7 @@ ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent)
     this, &ShipSpecEditorDialog::editSpec);
   connect(redGunSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
     this, &ShipSpecEditorDialog::editSpec);
+  connect(presetConfigComboBox_, SIGNAL(activated(const QString&)), this, SLOT(presetSelected(const QString&)));
 }
 
 void ShipSpecEditorDialog::setSpec(const ShipSpec& spec)
@@ -51,4 +52,57 @@ void ShipSpecEditorDialog::editSpec(int newValue)
     displayedSpec_.orangeGuns = newValue;
   else if (name.startsWith("redGun"))
     displayedSpec_.redGuns = newValue;
+}
+
+void ShipSpecEditorDialog::presetSelected(const QString& name)
+{
+  if (name == "Base Terran Interceptor")
+  {
+    setSpec({0, 0, 0, 1, 0, 0, 2});
+  }
+  else if (name == "Base Terran Cruiser")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Base Terran Dreadnought")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Base Terran Starbase")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Interceptor")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Galactic Civil Defense System")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Cruiser #1")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Cruiser #2")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Cruiser #3")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Cruiser #4")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Dreadnought #1")
+  {
+    qDebug() << "TODO";
+  }
+  else if (name == "Ancient Dreadnought #2")
+  {
+    qDebug() << "TODO";
+  }
+
 }
