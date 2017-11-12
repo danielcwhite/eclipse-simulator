@@ -116,7 +116,8 @@ public:
   {
     auto guiShip = std::make_shared<GuiShip>(std::get<0>(namedShip),
       std::get<1>(namedShip), std::get<2>(namedShip));
-    guiShip->setGuiImpl(std::make_shared<GuiShipImpl>(sgm_));
+    if (sgm_)
+      guiShip->setGuiImpl(std::make_shared<GuiShipImpl>(sgm_));
 
     return guiShip;
   }
@@ -139,6 +140,23 @@ void EclipseMainWindow::startBattle()
 
   log("Start battle.\n");
 
+  setupNewBattle(verboseMode);
+
+  setupHitpointGraphics();
+}
+
+void EclipseMainWindow::setupHitpointGraphics()
+{
+  std::map<QString, int> hitpoints;
+  for (const auto& ship : ships_)
+  {
+    hitpoints[ship->name()] = ship->spec().hull + 1;
+  }
+  shipGraphics_->setShipHitpoints(hitpoints);
+}
+
+void EclipseMainWindow::setupNewBattle(bool verbose)
+{
   using namespace Simulation;
   using namespace StateMachine;
 
@@ -151,24 +169,17 @@ void EclipseMainWindow::startBattle()
     else
       defender.addNewShip(ship->name().toStdString(), ship->spec(), ship->activeCount());
   }
-  static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(shipGraphics_);
-  auto verboseLog = [this](const std::string& str)
+  static ShipFactoryPtr factory = std::make_shared<GuiShipFactory>(verbose ? shipGraphics_ : nullptr);
+  auto verboseLog = [verbose, this](const std::string& str)
   {
-    if (verboseMode)
+    if (verbose)
     {
       log(QString::fromStdString(str));
       std::cout << str;
     }
   };
   battle_ = std::make_shared<Battle2>(attacker, defender, factory, verboseLog,
-    [this](const AttackRoll& roll) { displayRoll(roll); });
-
-  std::map<QString, int> hitpoints;
-  for (const auto& ship : ships_)
-  {
-    hitpoints[ship->name()] = ship->spec().hull + 1;
-  }
-  shipGraphics_->setShipHitpoints(hitpoints);
+    [verbose, this](const AttackRoll& roll) { if (verbose) displayRoll(roll); });
 }
 
 void EclipseMainWindow::displayRoll(const Simulation::AttackRoll& roll)
@@ -178,7 +189,7 @@ void EclipseMainWindow::displayRoll(const Simulation::AttackRoll& roll)
     rollLabel_->setText("");
     return;
   }
-  
+
   std::ostringstream display;
   display << "Last roll: ";
   for (const auto& y : roll.yellowDice)
@@ -227,7 +238,51 @@ void EclipseMainWindow::finishBattle()
 
 void EclipseMainWindow::simulateBattle()
 {
-  log("Does nothing yet\n");
+  log("Starting simulation.\n");
+
+  auto numTrials = numTrialsSpinBox_->value();
+
+#if 0
+{
+
+  QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)),
+    QString(), 0, numModules + 1, this);
+  progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
+  progress.setWindowModality(Qt::WindowModal);
+  progress.show();
+  progress.setValue(0);
+  //QFuture<int> future = QtConcurrent::run(load);
+  //progress.setValue(future.result());
+}
+#endif
+  std::map<std::string, int> results;
+  {
+    QProgressDialog progress("Simulating battle...", "Abort", 0, numTrials, this);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+
+    for (int i = 0; i < numTrials; i++)
+    {
+     progress.setValue(i);
+
+     if (progress.wasCanceled())
+         break;
+
+     setupNewBattle(false);
+     while (battle_->update());
+     results[battle_->victor()]++;
+     battle_.reset();
+    }
+    progress.setValue(numTrials);
+  }
+
+  log("Simulation finished. Results: \n");
+  for (const auto& result : results)
+  {
+    log(tr("%0: %1").arg(QString::fromStdString(result.first)).arg(result.second));
+    log("\n");
+  }
+
 }
 
 void EclipseMainWindow::log(const QString& str)
