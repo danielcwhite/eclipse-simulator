@@ -34,6 +34,8 @@ private:
   void setupBattleOrderView();
   void log(const QString& str);
   void displayRoll(const Simulation::AttackRoll& roll);
+  void setupNewBattle(bool verbose);
+  void setupHitpointGraphics();
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
