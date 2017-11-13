@@ -236,50 +236,73 @@ void EclipseMainWindow::finishBattle()
   battle_.reset();
 }
 
+bool EclipseMainWindow::eitherSideEmpty() const
+{
+  return attackerEmpty() || defenderEmpty();
+}
+
+bool EclipseMainWindow::attackerEmpty() const
+{
+  for (const auto& ship : ships_)
+  {
+    if (ship->isAttacker())
+      if (ship->activeCount() > 0)
+        return false;
+  }
+  return true;
+}
+
+bool EclipseMainWindow::defenderEmpty() const
+{
+  for (const auto& ship : ships_)
+  {
+    if (!ship->isAttacker())
+      if (ship->activeCount() > 0)
+        return false;
+  }
+  return true;
+}
+
 void EclipseMainWindow::simulateBattle()
 {
-  log("Starting simulation.\n");
-
   auto numTrials = numTrialsSpinBox_->value();
 
-#if 0
-{
+  if (eitherSideEmpty() || numTrials == 0)
+  {
+    log("Nothing to simulate.\n");
+    return;
+  }
 
-  QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)),
-    QString(), 0, numModules + 1, this);
-  progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
-  progress.setWindowModality(Qt::WindowModal);
-  progress.show();
-  progress.setValue(0);
-  //QFuture<int> future = QtConcurrent::run(load);
-  //progress.setValue(future.result());
-}
-#endif
+  log("Starting simulation.\n");
+
   std::map<std::string, int> results;
   {
+    const int block = 100;
     QProgressDialog progress("Simulating battle...", "Abort", 0, numTrials, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
     for (int i = 0; i < numTrials; i++)
     {
-     progress.setValue(i);
+      if (i % block == 0)
+        progress.setValue(i);
 
-     if (progress.wasCanceled())
+      if (progress.wasCanceled())
          break;
 
-     setupNewBattle(false);
-     while (battle_->update());
-     results[battle_->victor()]++;
-     battle_.reset();
+      setupNewBattle(false);
+      while (battle_->update());
+      results[battle_->victor()]++;
+      battle_.reset();
     }
     progress.setValue(numTrials);
   }
 
-  log("Simulation finished. Results: \n");
+  log("Simulation finished.\nResults:\n");
+  auto total = static_cast<double>(numTrials);
   for (const auto& result : results)
   {
-    log(tr("%0: %1").arg(QString::fromStdString(result.first)).arg(result.second));
+    log(tr("\t%0: %1%").arg(QString::fromStdString(result.first)).arg(result.second / total * 100));
     log("\n");
   }
 
