@@ -36,6 +36,9 @@ private:
   void displayRoll(const Simulation::AttackRoll& roll);
   void setupNewBattle(bool verbose);
   void setupHitpointGraphics();
+  bool attackerEmpty() const;
+  bool defenderEmpty() const;
+  bool eitherSideEmpty() const;
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;
