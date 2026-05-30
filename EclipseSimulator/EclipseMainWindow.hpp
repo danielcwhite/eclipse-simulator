@@ -39,6 +39,8 @@ private:
   bool attackerEmpty() const;
   bool defenderEmpty() const;
   bool eitherSideEmpty() const;
+  QStringList activeUnarmedShips() const;
+  bool confirmProceedWithUnarmedShips(const QString& action);
 
   QGraphicsScene* scene_;
   std::vector<ShipWidgetController*> ships_;

@@ -125,8 +125,38 @@ private:
   ShipGraphicsManager* sgm_;
 };
 
+bool EclipseMainWindow::confirmProceedWithUnarmedShips(const QString& action)
+{
+  const auto unarmed = activeUnarmedShips();
+  if (unarmed.isEmpty())
+    return true;
+  auto answer = QMessageBox::warning(this, "Unarmed Ships",
+    "The following ships have no weapons and will never deal damage:\n\n" +
+    unarmed.join("\n") + "\n\n" + action + " anyway?",
+    QMessageBox::Yes | QMessageBox::No);
+  return answer == QMessageBox::Yes;
+}
+
+QStringList EclipseMainWindow::activeUnarmedShips() const
+{
+  QStringList unarmed;
+  for (const auto& swc : ships_)
+  {
+    if (swc->activeCount() > 0)
+    {
+      const auto& s = swc->spec();
+      if (s.yellowGuns == 0 && s.orangeGuns == 0 && s.redGuns == 0)
+        unarmed << swc->name();
+    }
+  }
+  return unarmed;
+}
+
 void EclipseMainWindow::startBattle()
 {
+  if (!confirmProceedWithUnarmedShips("Start battle"))
+    return;
+
   startPushButton_->setEnabled(false);
   nextPushButton_->setEnabled(true);
   finishPushButton_->setEnabled(true);
@@ -272,6 +302,9 @@ void EclipseMainWindow::simulateBattle()
     log("Nothing to simulate.\n");
     return;
   }
+
+  if (!confirmProceedWithUnarmedShips("Simulate"))
+    return;
 
   log("Starting simulation.\n");
 
