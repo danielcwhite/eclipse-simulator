@@ -91,6 +91,7 @@ void ShipWidgetController::specAccepted()
 {
   int oldInitiative = spec_.initiative;
   spec_ = editor_->spec();
+  presetName_ = editor_->selectedPreset();
   updateSpecLabel();
   if (oldInitiative != spec_.initiative)
     Q_EMIT initiativeChanged(name_, spec_.initiative);
@@ -100,7 +101,10 @@ void ShipWidgetController::specAccepted()
 
 void ShipWidgetController::updateSpecLabel()
 {
-  auto desc = tr("<i>^%1 *%2 +%3 -%4</i><p><b><font color=yellow>%5</font> <font color=orange>%6</font> <font color=red>%7</font></b>")
+  QString presetLine = presetName_.isEmpty() ? "" :
+    tr("<b>%1</b><br>").arg(presetName_);
+  auto desc = presetLine +
+    tr("<i>^%1 *%2 +%3 -%4</i><p><b><font color=yellow>%5</font> <font color=orange>%6</font> <font color=red>%7</font></b>")
     .arg(spec_.initiative)
     .arg(spec_.hull)
     .arg(spec_.computer)
@@ -109,6 +113,23 @@ void ShipWidgetController::updateSpecLabel()
     .arg(spec_.orangeGuns)
     .arg(spec_.redGuns);
   widgets_.description->setText(desc);
+
+  auto tooltip = tr(
+    "^ %1  Initiative\n"
+    "* %2  Hull (absorbs damage)\n"
+    "+ %3  Computer (bonus to hit)\n"
+    "- %4  Shield (penalty to enemy hit rolls)\n"
+    "Yellow guns: %5  (1 damage each)\n"
+    "Orange guns: %6  (2 damage each)\n"
+    "Red guns:    %7  (4 damage each)")
+    .arg(spec_.initiative)
+    .arg(spec_.hull)
+    .arg(spec_.computer)
+    .arg(spec_.shield)
+    .arg(spec_.yellowGuns)
+    .arg(spec_.orangeGuns)
+    .arg(spec_.redGuns);
+  widgets_.description->setToolTip(tooltip);
 }
 
 void ShipWidgetController::specRejected()

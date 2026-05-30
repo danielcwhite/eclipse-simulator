@@ -11,12 +11,14 @@ class ShipSpecEditorDialog : public QDialog, public Ui::ShipSpecEditor
 public:
   explicit ShipSpecEditorDialog(const QString& name, QWidget* parent = nullptr);
   ShipSpec spec() const { return displayedSpec_; }
+  QString selectedPreset() const { return selectedPreset_; }
   void setSpec(const ShipSpec& spec);
 public Q_SLOTS:
   void editSpec(int newValue);
   void presetSelected(const QString& name);
 private:
   ShipSpec displayedSpec_;
+  QString selectedPreset_;
   static QMap<QString, ShipSpec> presetSpecs_;
 };
 

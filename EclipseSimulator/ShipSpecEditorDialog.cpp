@@ -34,6 +34,7 @@ void ShipSpecEditorDialog::setSpec(const ShipSpec& spec)
 
 void ShipSpecEditorDialog::editSpec(int newValue)
 {
+  selectedPreset_.clear();
   auto name = sender()->objectName();
   if (name.startsWith("initiative"))
     displayedSpec_.initiative = newValue;
@@ -58,6 +59,7 @@ void ShipSpecEditorDialog::presetSelected(const QString& name)
   if (iter != presetSpecs_.end())
   {
     setSpec(iter.value());
+    selectedPreset_ = name;
   }
 }
 

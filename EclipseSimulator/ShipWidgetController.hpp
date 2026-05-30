@@ -48,6 +48,7 @@ private:
   const int maxShips_;
   class ShipSpecEditorDialog* editor_;
   ShipSpec spec_;
+  QString presetName_;
   QString countSettingsKey_, specSettingsKey_;
 };
 
