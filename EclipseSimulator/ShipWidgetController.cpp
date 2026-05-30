@@ -137,17 +137,17 @@ namespace
 
   ShipSpec specFromString(const QString& str)
   {
-    QRegExp expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,i(\\d+)\\)");
-    auto pos = expr.indexIn(str);
-    //qDebug() << "specFromString matched:" << expr.capturedTexts();
+    QRegularExpression expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,i(\\d+)\\)");
+    auto match = expr.match(str);
+    //qDebug() << "specFromString matched:" << match.capturedTexts();
     return ShipSpec(
-      expr.cap(1).toInt(),
-      expr.cap(2).toInt(),
-      expr.cap(3).toInt(),
-      expr.cap(4).toInt(),
-      expr.cap(5).toInt(),
-      expr.cap(6).toInt(),
-      expr.cap(7).toInt()
+      match.captured(1).toInt(),
+      match.captured(2).toInt(),
+      match.captured(3).toInt(),
+      match.captured(4).toInt(),
+      match.captured(5).toInt(),
+      match.captured(6).toInt(),
+      match.captured(7).toInt()
     );
   }
 }

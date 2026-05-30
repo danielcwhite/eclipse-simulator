@@ -6,23 +6,18 @@ ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent)
   setupUi(this);
   editShipGroupBox_->setTitle(editShipGroupBox_->title() + name);
   setModal(true);
-  connect(initiativeSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(hullSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(shieldSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(computerSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(yellowGunSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(orangeGunSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
-  connect(redGunSpinBox_, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
-    this, &ShipSpecEditorDialog::editSpec);
+  connect(initiativeSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(hullSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(shieldSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(computerSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(yellowGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(orangeGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(redGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
 
   presetConfigComboBox_->addItems(presetSpecs_.keys());
-  connect(presetConfigComboBox_, SIGNAL(activated(const QString&)), this, SLOT(presetSelected(const QString&)));
+  connect(presetConfigComboBox_, &QComboBox::activated, this, [this](int index) {
+    presetSelected(presetConfigComboBox_->itemText(index));
+  });
 }
 
 void ShipSpecEditorDialog::setSpec(const ShipSpec& spec)
