@@ -173,11 +173,17 @@ bool Battle2::battleComplete()
     victorString_ = "Defender";
     return true;
   }
+  if (roundCount_ > 100)
+  {
+    victorString_ = "Stalemate";
+    return true;
+  }
   return false;
 }
 
 void Battle2::resetShipsForNextRound()
 {
-  log("Ready for next round.");
+  roundCount_++;
+  log("Ready for next round ", roundCount_, ".");
   firedShips_.clear();
 }
