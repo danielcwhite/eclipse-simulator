@@ -55,6 +55,8 @@ Battle2::~Battle2()
 
 bool Battle2::update()
 {
+  if (!state_)
+    return false;
   state_ = state_->update(*this);
   return state_ != nullptr;
 }

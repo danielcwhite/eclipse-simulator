@@ -34,7 +34,7 @@ public:
   void addDeathLines();
 private:
   std::vector<QGraphicsRectItem*> damageCubes_;
-  QGraphicsSimpleTextItem* hitpoints_;
+  QGraphicsSimpleTextItem* hitpoints_ {nullptr};
   std::vector<QGraphicsLineItem*> deathLines_;
 };
 
