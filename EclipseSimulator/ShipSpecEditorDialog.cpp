@@ -76,15 +76,15 @@ QMap<QString, ShipSpec> ShipSpecEditorDialog::presetSpecs_ =
   { "Ancient Interceptor", {1, 0, 1, 2, 0, 0, 2} },
   { "Galactic Civil Defense System", {7, 0, 1, 4, 0, 0, 0} },
   { "Ancient Cruiser #1", {2, 0, 2, 3, 0, 0, 4} },
-  { "Ancient Cruiser #2--INCOMPLETE", {1, 0, 2, 2, 0, 0, 1} },  //TODO: +2 orange missiles
+  { "Ancient Cruiser #2", {1, 0, 2, 2, 0, 0, 2, 1} },
   { "Ancient Cruiser #3", {2, 1, 1, 4, 0, 0, 0} },
-  { "Ancient Cruiser #4--INCOMPLETE", {4, 0, 2, 2, 0, 0, 2} },  //TODO special ability: point defense
-  { "Ancient Cruiser #5--INCOMPLETE", {1, 0, 2, 0, 1, 0, 2} },  //TODO: +1 red missile //TODO special ability: +2 distortion shield
+  { "Ancient Cruiser #4--INCOMPLETE", {4, 0, 2, 2, 0, 0, 2} },  // special ability: point defense (not implemented)
+  { "Ancient Cruiser #5--INCOMPLETE", {1, 0, 2, 0, 1, 0, 2} },  // TODO: +1 red missile, +2 distortion shield (not implemented)
   { "Ancient Cruiser #6", {2, 0, 1, 0, 2, 0, 3} },
   { "Ancient Cruiser #7", {4, 0, 3, 0, 0, 1, 0} },
   { "Ancient Cruiser #8", {2, 3, 1, 3, 0, 0, 0} },
-  { "Ancient Dreadnought #1--INCOMPLETE", {5, 0, 2, 0, 2, 0, 3} }, // TODO: special ability, regeneration: remove one damage cube per round
-  { "Ancient Dreadnought #2--INCOMPLETE", {3, 0, 2, 0, 0, 1, 4} }, // TODO: +4 yellow missiles
+  { "Ancient Dreadnought #1--INCOMPLETE", {5, 0, 2, 0, 2, 0, 3} }, // special ability: regeneration (not implemented)
+  { "Ancient Dreadnought #2--INCOMPLETE", {3, 0, 2, 0, 0, 1, 4} }, // TODO: +4 yellow missiles (not implemented)
   { "Rho Indi Syndicate Interceptor", {0, 1, 0, 1, 0, 0, 4} },
   { "Rho Indi Syndicate Cruiser", {1, 1, 1, 1, 0, 0, 3} },
   { "Rho Indi Syndicate Starbase", {2, 1, 1, 1, 0, 0, 4} },
