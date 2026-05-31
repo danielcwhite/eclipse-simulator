@@ -15,7 +15,13 @@ ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent)
   connect(redGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
   connect(missilesSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
 
-  presetConfigComboBox_->addItems(presetSpecs_.keys());
+  // Extract ship type from name (e.g. "Attacker Interceptor" -> "Interceptor")
+  QString shipType = name.split(' ').last();
+  QStringList filtered;
+  for (const auto& key : presetSpecs_.keys())
+    if (key.contains(shipType, Qt::CaseInsensitive))
+      filtered << key;
+  presetConfigComboBox_->addItems(filtered);
   connect(presetConfigComboBox_, &QComboBox::activated, this, [this](int index) {
     presetSelected(presetConfigComboBox_->itemText(index));
   });
@@ -74,7 +80,7 @@ QMap<QString, ShipSpec> ShipSpecEditorDialog::presetSpecs_ =
   { "Terran Dreadnought", {2, 0, 1, 2, 0, 0, 1} },
   { "Terran Starbase", {2, 0, 1, 1, 0, 0, 4} },
   { "Ancient Interceptor", {1, 0, 1, 2, 0, 0, 2} },
-  { "Galactic Civil Defense System", {7, 0, 1, 4, 0, 0, 0} },
+  { "Galactic Center Defense System (Starbase)", {7, 0, 1, 4, 0, 0, 0} },
   { "Ancient Cruiser #1", {2, 0, 2, 3, 0, 0, 4} },
   { "Ancient Cruiser #2", {1, 0, 2, 2, 0, 0, 2, 1} },
   { "Ancient Cruiser #3", {2, 1, 1, 4, 0, 0, 0} },
