@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(EclipseSimulator)
 
-find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Widgets Svg REQUIRED)
 MESSAGE(STATUS "Found Qt version: ${Qt6Core_VERSION}")
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
@@ -54,7 +54,7 @@ SET(EclipseSimulatorGUI_FORMS
 
 qt_wrap_ui(EclipseSimulatorGUI_FORMS_HEADERS ${EclipseSimulatorGUI_FORMS})
 qt_wrap_cpp(EclipseSimulatorGUI_HEADERS_MOC ${EclipseSimulatorGUI_HEADERS_TO_MOC})
-#qt_add_resources(EclipseSimulatorGUI_RESOURCES_RCC ${Interface_Application_RESOURCES})
+qt_add_resources(EclipseSimulatorGUI_RESOURCES resources/ships.qrc)
 
 add_executable(EclipseSimulatorGUI
   ${EclipseSimulatorGUI_SOURCES}
@@ -62,11 +62,12 @@ add_executable(EclipseSimulatorGUI
   ${EclipseSimulatorGUI_HEADERS_TO_MOC}
   ${EclipseSimulatorGUI_HEADERS_MOC}
   ${EclipseSimulatorGUI_FORMS_HEADERS}
-  #${Interface_Application_RESOURCES_RCC}
+  ${EclipseSimulatorGUI_RESOURCES}
 )
 
 TARGET_LINK_LIBRARIES(EclipseSimulatorGUI
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets
+  Qt6::Svg
 )

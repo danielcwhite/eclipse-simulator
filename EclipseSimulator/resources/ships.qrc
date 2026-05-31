@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/ships">
+    <file alias="interceptor.svg">ships/interceptor.svg</file>
+    <file alias="cruiser.svg">ships/cruiser.svg</file>
+    <file alias="dreadnought.svg">ships/dreadnought.svg</file>
+    <file alias="starbase.svg">ships/starbase.svg</file>
+  </qresource>
+</RCC>

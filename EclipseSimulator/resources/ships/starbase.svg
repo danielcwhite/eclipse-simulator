@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Hexagonal ring space station, flat-top, with 6 docking arm bumps -->
+  <path fill="white" fill-rule="evenodd" d="
+    M 476,256 L 366,447 L 146,447 L 36,256 L 146,65 L 366,65 Z
+    M 376,256 L 311,369 L 201,369 L 136,256 L 201,143 L 311,143 Z
+  "/>
+  <!-- 6 small docking bumps at each vertex -->
+  <rect fill="white" x="243" y="38"  width="26" height="40" rx="4"/>
+  <rect fill="white" x="243" y="434" width="26" height="40" rx="4"/>
+  <rect fill="white" x="18"  y="234" width="40" height="26" rx="4"/>
+  <rect fill="white" x="454" y="234" width="40" height="26" rx="4"/>
+  <rect fill="white" x="348" y="60"  width="40" height="26" rx="4" transform="rotate(30 368 73)"/>
+  <rect fill="white" x="124" y="60"  width="40" height="26" rx="4" transform="rotate(-30 144 73)"/>
+  <rect fill="white" x="348" y="426" width="40" height="26" rx="4" transform="rotate(-30 368 439)"/>
+  <rect fill="white" x="124" y="426" width="40" height="26" rx="4" transform="rotate(30 144 439)"/>
+</svg>

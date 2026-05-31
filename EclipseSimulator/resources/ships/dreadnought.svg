@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Heavy dreadnought with side gun pods and engine blocks -->
+  <path fill="white" d="
+    M 256,45
+    L 335,130 L 415,118 L 442,185 L 408,215 L 368,210
+    L 425,375 L 382,422 L 310,358
+    L 256,395
+    L 202,358 L 130,422 L 87,375
+    L 144,210 L 104,215 L 70,185 L 97,118 L 177,130
+    Z
+  "/>
+</svg>

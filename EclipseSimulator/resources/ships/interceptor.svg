@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Slim delta-wing interceptor, top-down view -->
+  <path fill="white" d="
+    M 256,50
+    L 355,390
+    L 295,345
+    L 256,430
+    L 217,345
+    L 157,390
+    Z
+  "/>
+</svg>

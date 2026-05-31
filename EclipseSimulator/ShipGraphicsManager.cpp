@@ -1,4 +1,6 @@
 #include <ShipGraphicsManager.hpp>
+#include <QSvgRenderer>
+#include <QPainter>
 
 namespace
 {
@@ -7,33 +9,39 @@ namespace
   const int spacing = 10;
   const int maxShipTypes = 7;
   const int border = 5;
+
+  QPixmap renderShipSvg(const QString& shipType, bool isAttacker, int width, int height)
+  {
+    QString resource = ":/ships/" + shipType.toLower() + ".svg";
+    QSvgRenderer renderer(resource);
+
+    // Render white SVG onto transparent pixmap
+    QPixmap pixmap(width, height);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    renderer.render(&painter);
+    painter.end();
+
+    // Tint to attacker (red) or defender (blue) using SourceIn blend
+    QColor color = isAttacker ? QColor(255, 90, 90) : QColor(90, 140, 255);
+    QPainter tinter(&pixmap);
+    tinter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    tinter.fillRect(pixmap.rect(), color);
+    tinter.end();
+
+    return pixmap;
+  }
 }
 
 ShipGraphicsManager::ShipGraphicsManager(QGraphicsScene* scene, QWidget* parent)
   : QObject(parent), scene_(scene)
 {}
 
-Qt::BrushStyle getPattern(const QString& ship)
-{
-  if (ship == "Interceptor")
-    return Qt::SolidPattern;
-  if (ship == "Cruiser")
-    return Qt::Dense1Pattern;
-  if (ship == "Dreadnought")
-    return Qt::DiagCrossPattern;
-  if (ship == "Starbase")
-    return Qt::BDiagPattern;
-  return Qt::VerPattern;
-}
-
 void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 {
   auto desc = name.split(' ');
   auto isAttacker = desc[0] == "Attacker";
   auto shipType = desc[1];
-  auto color = isAttacker ? Qt::red : Qt::blue;
-  auto pattern = getPattern(shipType);
-  auto leftSide = isAttacker;
 
   auto& row = rectItems_[name];
   for (int i = 0; i < row.size(); ++i)
@@ -43,8 +51,21 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
       row[i].type = shipType;
       row[i].isAttacker = isAttacker;
       row[i].initiative = initiative;
-      row[i].item->setBrush(QBrush(color, pattern));
+      row[i].item->setBrush(Qt::NoBrush);
       row[i].item->setOpacity(1);
+
+      QPixmap px = renderShipSvg(shipType, isAttacker, w, h);
+      if (!row[i].shipPixmap_)
+      {
+        row[i].shipPixmap_ = scene_->addPixmap(px);
+        row[i].shipPixmap_->setPos(row[i].item->pos());
+        row[i].shipPixmap_->setZValue(1);
+      }
+      else
+      {
+        row[i].shipPixmap_->setPixmap(px);
+        row[i].shipPixmap_->setVisible(true);
+      }
       break;
     }
   }
@@ -52,10 +73,6 @@ void ShipGraphicsManager::addShipRect(const QString& name, int initiative)
 
 void ShipGraphicsManager::removeShipRect(const QString& name)
 {
-  auto desc = name.split(' ');
-  auto isAttacker = desc[0] == "Attacker";
-  auto leftSide = isAttacker;
-
   auto& row = rectItems_[name];
   for (int i = row.size() - 1; i >= 0; --i)
   {
@@ -64,6 +81,8 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
       row[i].type = "";
       row[i].item->setBrush(Qt::black);
       row[i].item->setOpacity(0.1);
+      if (row[i].shipPixmap_)
+        row[i].shipPixmap_->setVisible(false);
       if (i == 0)
         reorderShips();
       break;
@@ -110,6 +129,8 @@ void ShipGraphicsManager::reorderShips()
     {
       auto oldY = row[j].item->pos().y();
       row[j].item->moveBy(0, newY - oldY);
+      if (row[j].shipPixmap_)
+        row[j].shipPixmap_->moveBy(0, newY - oldY);
     }
     ++i;
   }
@@ -160,11 +181,13 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto desc = name.split(' ');
     auto isAttacker = desc[0] == "Attacker";
     auto shipType = desc[1];
-    auto color = isAttacker ? Qt::red : Qt::blue;
-    auto pattern = getPattern(shipType);
     auto leftSide = isAttacker;
 
-    auto rectangle = scene_->addRect(0, 0, 3*w, h, outlinePen, QBrush(color, pattern));
+    auto rectangle = scene_->addRect(0, 0, 3*w, h, outlinePen, Qt::NoBrush);
+    QPixmap px = renderShipSvg(shipType, isAttacker, 3*w, h);
+    auto svgItem = scene_->addPixmap(px);
+    svgItem->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
+    svgItem->setZValue(1);
     rectangle->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
 
     descriptionRects_.emplace_back(rectangle, name, shipType, isAttacker, 0);

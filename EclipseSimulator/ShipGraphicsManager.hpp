@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 #include <QtWidgets>
 
 class ShipGraphicsItem
@@ -36,6 +37,8 @@ private:
   std::vector<QGraphicsRectItem*> damageCubes_;
   QGraphicsSimpleTextItem* hitpoints_ {nullptr};
   std::vector<QGraphicsLineItem*> deathLines_;
+public:
+  QGraphicsPixmapItem* shipPixmap_ {nullptr};
 };
 
 class ShipGraphicsManager : public QObject
