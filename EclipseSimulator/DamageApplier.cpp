@@ -112,24 +112,25 @@ void Simulation::apply_damage(ShipVector ships, DamageApplier& da, DamageApplica
   std::for_each(sorted.begin(), sorted.end(), da);
 }
 
+// Ship type priority for ancient damage targeting: prefer to kill smallest first,
+// then by type (Interceptor < Cruiser < Dreadnought).
+static int shipTypePriority(const std::string& name)
+{
+  if (name.find("Interceptor") != std::string::npos) return 0;
+  if (name.find("Cruiser")     != std::string::npos) return 1;
+  if (name.find("Starbase")    != std::string::npos) return 2;
+  if (name.find("Dreadnought") != std::string::npos) return 3;
+  return 1; // unknown — treat as Cruiser
+}
+
 ShipVector AncientsDamageApplicationStrategy::orderShips(const ShipVector& ships)
 {
   auto copy(ships);
-  std::sort(copy.begin(), copy.end(), [](ShipPtr lhs, ShipPtr rhs)
+  std::sort(copy.begin(), copy.end(), [](const ShipPtr& lhs, const ShipPtr& rhs)
   {
-    if (lhs->spec().hull < rhs->spec().hull)
-      return true;
-    if (lhs->spec().hull > rhs->spec().hull)
-      return false;
-    if (lhs->name().find("Dreadnought") != std::string::npos)
-      return true;
-    if (rhs->name().find("Interceptor") != std::string::npos)
-      return true;
-    if (lhs->name().find("Interceptor") != std::string::npos)
-      return false;
-    if (rhs->name().find("Dreadnought") != std::string::npos)
-      return false;
-    return true;
+    if (lhs->spec().hull != rhs->spec().hull)
+      return lhs->spec().hull < rhs->spec().hull;
+    return shipTypePriority(lhs->name()) < shipTypePriority(rhs->name());
   });
   return copy;
 }
