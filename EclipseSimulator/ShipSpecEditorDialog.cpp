@@ -13,6 +13,7 @@ ShipSpecEditorDialog::ShipSpecEditorDialog(const QString& name, QWidget* parent)
   connect(yellowGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
   connect(orangeGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
   connect(redGunSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
+  connect(missilesSpinBox_, &QSpinBox::valueChanged, this, &ShipSpecEditorDialog::editSpec);
 
   presetConfigComboBox_->addItems(presetSpecs_.keys());
   connect(presetConfigComboBox_, &QComboBox::activated, this, [this](int index) {
@@ -30,6 +31,7 @@ void ShipSpecEditorDialog::setSpec(const ShipSpec& spec)
   yellowGunSpinBox_->setValue(spec.yellowGuns);
   orangeGunSpinBox_->setValue(spec.orangeGuns);
   redGunSpinBox_->setValue(spec.redGuns);
+  missilesSpinBox_->setValue(spec.missiles);
 }
 
 void ShipSpecEditorDialog::editSpec(int newValue)
@@ -50,6 +52,8 @@ void ShipSpecEditorDialog::editSpec(int newValue)
     displayedSpec_.orangeGuns = newValue;
   else if (name.startsWith("redGun"))
     displayedSpec_.redGuns = newValue;
+  else if (name.startsWith("missiles"))
+    displayedSpec_.missiles = newValue;
 }
 
 //hull(0), shield(0), computer(0), yellowGuns(0), orangeGuns(0), redGuns(0), initiative(0)

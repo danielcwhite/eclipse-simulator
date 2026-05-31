@@ -37,6 +37,12 @@ namespace StateMachine
 
     bool update();
 
+    // Missile phase
+    void setActiveMissileShooter();
+    void fireMissiles();
+    bool missileShipsRemaining() const;
+
+    // Engagement rounds
     void setActiveAttacker();
     void applyDamage();
     bool roundComplete() const;
@@ -50,13 +56,41 @@ namespace StateMachine
     std::shared_ptr<BattleState> state_;
 
     ShipPtr activeAttacker_;
-    std::deque<ShipPtr> allShips_, firedShips_;
+    std::deque<ShipPtr> allShips_, firedShips_, missileShips_;
     int roundCount_{0};
     std::string victorString_;
     Simulation::RollDisplayer rollDisplayer_;
 
     bool battleComplete();
   };
+
+  // --- Missile phase states (run once before engagement rounds) ---
+
+  class MissilePickShooterState : public BattleState
+  {
+  public:
+    std::shared_ptr<BattleState> update(Battle2& battle) override;
+  };
+
+  class MissileFireState : public BattleState
+  {
+  public:
+    std::shared_ptr<BattleState> update(Battle2& battle) override;
+  };
+
+  class MissileCleanupDeadShipsState : public BattleState
+  {
+  public:
+    std::shared_ptr<BattleState> update(Battle2& battle) override;
+  };
+
+  class MissileCheckVictoryState : public BattleState
+  {
+  public:
+    std::shared_ptr<BattleState> update(Battle2& battle) override;
+  };
+
+  // --- Engagement round states ---
 
   class PickActiveAttackerState : public BattleState
   {

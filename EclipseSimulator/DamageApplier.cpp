@@ -18,13 +18,39 @@ OneGunRoll DamageApplier::rollGuns(const ShipSpec& ship, int ShipSpec::*gun)
   return gunRoll;
 }
 
-AttackRoll DamageApplier::attack(const ShipSpec& ship)
+AttackRoll DamageApplier::cannonRoll(const ShipSpec& ship)
 {
   return {
     rollGuns(ship, &ShipSpec::yellowGuns),
     rollGuns(ship, &ShipSpec::orangeGuns),
     rollGuns(ship, &ShipSpec::redGuns)
   };
+}
+
+AttackRoll DamageApplier::missileRoll(const ShipSpec& ship)
+{
+  // Each missile part fires 2 orange dice; no yellow or red dice
+  OneGunRoll orangeDice;
+  for (int i = 0; i < ship.missiles * 2; ++i)
+    orangeDice.push_back(roll());
+  return { {}, orangeDice, {} };
+}
+
+DamageApplier::DamageApplier(const ShipPtr& attacker, AttackRoll roll, Logger l, RollDisplayer rollDisplayer) :
+  HasLogger(l), attacker_(attacker), roll_(std::move(roll)), rollDisplayer_(rollDisplayer)
+{
+  log(attacker->toString(), " rolls: \t", roll_);
+  rollDisplayer_(roll_);
+}
+
+DamageApplier DamageApplier::makeCannonApplier(const ShipPtr& attacker, Logger log, RollDisplayer rollDisplayer)
+{
+  return DamageApplier(attacker, cannonRoll(attacker->spec()), log, rollDisplayer);
+}
+
+DamageApplier DamageApplier::makeMissileApplier(const ShipPtr& attacker, Logger log, RollDisplayer rollDisplayer)
+{
+  return DamageApplier(attacker, missileRoll(attacker->spec()), log, rollDisplayer);
 }
 
 std::function<HitResult(const OneGunRoll&)> DamageApplier::resultOfAttackPart(int computer, int shield)
@@ -53,14 +79,6 @@ ResultOfRoll DamageApplier::resultOfAttack(const ShipSpec& shooter, const Attack
     attackFunc(roll.orangeDice),
     attackFunc(roll.redDice)
   };
-}
-
-DamageApplier::DamageApplier(const ShipPtr& attacker, Logger l, RollDisplayer rollDisplayer) :
-  HasLogger(l), attacker_(attacker), rollDisplayer_(rollDisplayer)
-{
-  roll_ = attack(attacker->spec());
-  log(attacker->toString(), " rolls: \t", roll_);
-  rollDisplayer_(roll_);
 }
 
 void DamageApplier::operator()(ShipPtr target)

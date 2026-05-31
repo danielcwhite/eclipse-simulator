@@ -104,14 +104,15 @@ void ShipWidgetController::updateSpecLabel()
   QString presetLine = presetName_.isEmpty() ? "" :
     tr("<b>%1</b><br>").arg(presetName_);
   auto desc = presetLine +
-    tr("<i>^%1 *%2 +%3 -%4</i><p><b><font color=yellow>%5</font> <font color=orange>%6</font> <font color=red>%7</font></b>")
+    tr("<i>^%1 *%2 +%3 -%4</i><p><b><font color=yellow>%5</font> <font color=orange>%6</font> <font color=red>%7</font>%8</b>")
     .arg(spec_.initiative)
     .arg(spec_.hull)
     .arg(spec_.computer)
     .arg(spec_.shield)
     .arg(spec_.yellowGuns)
     .arg(spec_.orangeGuns)
-    .arg(spec_.redGuns);
+    .arg(spec_.redGuns)
+    .arg(spec_.missiles > 0 ? tr(" <font color=orange>%1M</font>").arg(spec_.missiles) : "");
   widgets_.description->setText(desc);
 
   auto tooltip = tr(
@@ -121,14 +122,16 @@ void ShipWidgetController::updateSpecLabel()
     "- %4  Shield (penalty to enemy hit rolls)\n"
     "Yellow guns: %5  (1 damage each)\n"
     "Orange guns: %6  (2 damage each)\n"
-    "Red guns:    %7  (4 damage each)")
+    "Red guns:    %7  (4 damage each)\n"
+    "Missiles:    %8  (2 orange dice, fire once)")
     .arg(spec_.initiative)
     .arg(spec_.hull)
     .arg(spec_.computer)
     .arg(spec_.shield)
     .arg(spec_.yellowGuns)
     .arg(spec_.orangeGuns)
-    .arg(spec_.redGuns);
+    .arg(spec_.redGuns)
+    .arg(spec_.missiles);
   widgets_.description->setToolTip(tooltip);
 }
 
@@ -158,17 +161,18 @@ namespace
 
   ShipSpec specFromString(const QString& str)
   {
-    QRegularExpression expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,i(\\d+)\\)");
+    QRegularExpression expr("ShipSpec\\(h(\\d+),s(\\d+),c(\\d+),(\\d+)d1,(\\d+)d2,(\\d+)d4,m(\\d+),i(\\d+)\\)");
     auto match = expr.match(str);
     //qDebug() << "specFromString matched:" << match.capturedTexts();
     return ShipSpec(
-      match.captured(1).toInt(),
-      match.captured(2).toInt(),
-      match.captured(3).toInt(),
-      match.captured(4).toInt(),
-      match.captured(5).toInt(),
-      match.captured(6).toInt(),
-      match.captured(7).toInt()
+      match.captured(1).toInt(),  // hull
+      match.captured(2).toInt(),  // shield
+      match.captured(3).toInt(),  // computer
+      match.captured(4).toInt(),  // yellowGuns
+      match.captured(5).toInt(),  // orangeGuns
+      match.captured(6).toInt(),  // redGuns
+      match.captured(7).toInt(),  // missiles
+      match.captured(8).toInt()   // initiative
     );
   }
 }

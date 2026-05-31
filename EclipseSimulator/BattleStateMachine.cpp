@@ -39,12 +39,18 @@ Battle2::Battle2(const AttackingFleet& attacker, const DefendingFleet& defender,
   log("Battle with these sorted ships:");
   auto i = 1;
   for (const auto& ship : allShips_)
-  {
     log(i++, "\t", ship->toString(), "\t", ship->describe());
-  }
   log();
 
-  state_ = std::make_shared<PickActiveAttackerState>();
+  // Populate missile queue: ships with missiles, in initiative order (already sorted)
+  for (const auto& ship : allShips_)
+    if (ship->spec().missiles > 0)
+      missileShips_.push_back(ship);
+
+  if (!missileShips_.empty())
+    log("Missile phase: ", missileShips_.size(), " ship(s) will fire missiles.");
+
+  state_ = std::make_shared<MissilePickShooterState>();
 }
 
 Battle2::~Battle2()
@@ -60,6 +66,77 @@ bool Battle2::update()
   state_ = state_->update(*this);
   return state_ != nullptr;
 }
+
+// --- Missile phase ---
+
+std::shared_ptr<BattleState> MissilePickShooterState::update(Battle2& battle)
+{
+  // Skip dead ships in missile queue, then check if any remain
+  battle.setActiveMissileShooter();
+  if (!battle.missileShipsRemaining())
+  {
+    // No missiles left to fire — begin engagement rounds
+    return std::make_shared<PickActiveAttackerState>();
+  }
+  return std::make_shared<MissileFireState>();
+}
+
+std::shared_ptr<BattleState> MissileFireState::update(Battle2& battle)
+{
+  battle.fireMissiles();
+  return std::make_shared<MissileCleanupDeadShipsState>();
+}
+
+std::shared_ptr<BattleState> MissileCleanupDeadShipsState::update(Battle2& battle)
+{
+  battle.cleanupDeadShips();
+  return std::make_shared<MissileCheckVictoryState>();
+}
+
+std::shared_ptr<BattleState> MissileCheckVictoryState::update(Battle2& battle)
+{
+  if (battle.checkForVictory())
+    return nullptr;
+  return std::make_shared<MissilePickShooterState>();
+}
+
+void Battle2::setActiveMissileShooter()
+{
+  // Drain dead or already-destroyed ships from the front of the missile queue
+  while (!missileShips_.empty() && !missileShips_.front()->isAlive())
+    missileShips_.pop_front();
+
+  if (missileShips_.empty())
+  {
+    activeAttacker_ = nullptr;
+    return;
+  }
+
+  activeAttacker_ = missileShips_.front();
+  missileShips_.pop_front();
+  log("Missile fire: ", activeAttacker_->toString());
+  activeAttacker_->setActive(true);
+  rollDisplayer_({});
+}
+
+bool Battle2::missileShipsRemaining() const
+{
+  return activeAttacker_ != nullptr;
+}
+
+void Battle2::fireMissiles()
+{
+  auto da = DamageApplier::makeMissileApplier(activeAttacker_, logger(), rollDisplayer_);
+  AncientsDamageApplicationStrategy ancients;
+  apply_damage(allShips_, da, ancients);
+}
+
+// Missile cleanupDeadShips is the same as engagement, but doesn't push activeAttacker_
+// back into allShips_ (missiles fire once and are done).
+// We reuse cleanupDeadShips() but override its end behavior via a flag — instead,
+// just inline a simpler version here by calling the shared logic and handling attacker ourselves.
+
+// --- Engagement round states ---
 
 std::shared_ptr<BattleState> PickActiveAttackerState::update(Battle2& battle)
 {
@@ -106,7 +183,7 @@ void Battle2::setActiveAttacker()
 
 void Battle2::applyDamage()
 {
-  DamageApplier da(activeAttacker_, logger(), rollDisplayer_);
+  auto da = DamageApplier::makeCannonApplier(activeAttacker_, logger(), rollDisplayer_);
   AncientsDamageApplicationStrategy ancients; // todo: user input
   apply_damage(allShips_, da, ancients);
 }
@@ -126,7 +203,7 @@ void Battle2::cleanupDeadShips()
 {
   auto deadShipCleanup = [](ShipPtr& ship)
   {
-    auto isDead =  !ship->isAlive();
+    auto isDead = !ship->isAlive();
     if (isDead)
       ship->setAsDead();
     return isDead;
@@ -137,10 +214,13 @@ void Battle2::cleanupDeadShips()
   auto removed = count - allShips_.size();
   log("Removed ", removed, " dead ships.");
 
-  firedShips_.push_back(activeAttacker_);
-  allShips_.push_back(activeAttacker_);
-  activeAttacker_->setActive(false);
-  activeAttacker_ = nullptr;
+  if (activeAttacker_)
+  {
+    firedShips_.push_back(activeAttacker_);
+    allShips_.push_back(activeAttacker_);
+    activeAttacker_->setActive(false);
+    activeAttacker_ = nullptr;
+  }
 }
 
 bool Battle2::checkForVictory()
