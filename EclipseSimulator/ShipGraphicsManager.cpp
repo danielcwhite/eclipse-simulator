@@ -79,8 +79,6 @@ void ShipGraphicsManager::removeShipRect(const QString& name)
     if (!row[i].type.isEmpty())
     {
       row[i].type = "";
-      row[i].item->setBrush(Qt::black);
-      row[i].item->setOpacity(0.1);
       if (row[i].shipPixmap_)
         row[i].shipPixmap_->setVisible(false);
       if (i == 0)
@@ -138,9 +136,6 @@ void ShipGraphicsManager::reorderShips()
 
 void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 {
-  QPen outlinePen(Qt::darkGreen);
-  outlinePen.setWidth(2);
-
   auto i = 0;
   for (const auto& name : names_)
   {
@@ -158,12 +153,12 @@ void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
     rectItems_[name].resize(max);
     for (int j = 0; j < max; ++j)
     {
-      auto rectangle = scene_->addRect(0, 0, w, h, outlinePen, Qt::black);
+      // Invisible rect — used only for positioning, active highlight, and damage cubes
+      auto rectangle = scene_->addRect(0, 0, w, h, Qt::NoPen, Qt::NoBrush);
       auto horizontal = leftSide ? j : (7 - j);
       rectangle->setPos(border + horizontal*(w + spacing), border + i*(h + spacing));
       rectItems_[name][j].item = rectangle;
       rectItems_[name][j].name = name;
-      rectangle->setOpacity(0.1);
     }
     ++i;
   }
@@ -172,8 +167,6 @@ void ShipGraphicsManager::addShipBorders(const std::map<QString, int>& maxShips)
 void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
 {
   names_ = names;
-  QPen outlinePen(Qt::darkGreen);
-  outlinePen.setWidth(2);
 
   auto i = 0;
   for (const auto& name : names)
@@ -183,11 +176,8 @@ void ShipGraphicsManager::addShipDescriptions(const std::vector<QString>& names)
     auto shipType = desc[1];
     auto leftSide = isAttacker;
 
-    auto rectangle = scene_->addRect(0, 0, 3*w, h, outlinePen, Qt::NoBrush);
-    QPixmap px = renderShipSvg(shipType, isAttacker, 3*w, h);
-    auto svgItem = scene_->addPixmap(px);
-    svgItem->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
-    svgItem->setZValue(1);
+    // Invisible rect used only for sorting/reordering logic
+    auto rectangle = scene_->addRect(0, 0, 0, 0, Qt::NoPen, Qt::NoBrush);
     rectangle->setPos(leftSide ? -30-2*w : 250, 5 + 40*i);
 
     descriptionRects_.emplace_back(rectangle, name, shipType, isAttacker, 0);
